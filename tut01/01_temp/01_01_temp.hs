@@ -5,3 +5,15 @@
 -- AUFGABE 1 --
 ------------------------------------------------------------------------
 
+fac :: Int -> Int
+
+
+--sumFacs :: Int -> Int -> Int
+
+
+-- oder
+--sumFacs' :: Int -> Int -> Int
+
+
+-- oder
+--sumFacs'' :: Int -> Int -> Int

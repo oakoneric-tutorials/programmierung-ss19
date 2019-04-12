@@ -7,34 +7,41 @@
 
 -- (a) Produkt der Listenelemente
 
-prod :: 
+--prod :: [Int] -> Int
 
 
 
 -- (b) Umkehrung einer Listen
 
-rev :: 
+--rev :: [Int] -> [Int]
+
 
 -- (c) Entfernen von Listenelementen
 -- rem ist bereits definiert
 -- Ausblenden: import Prelude hiding (rem)
 
-rem' :: 
+--rem' :: Int -> [Int] -> [Int]
 
-  
+
 -- oder:
-rem'' :: 
+--rem'' :: Int -> [Int] -> [Int]
+
 
 
 -- (d) Sortierung prüfen
 
-isOrd :: 
+--isOrd :: [Int] -> Bool
+
+
+--isOrd' :: [Int] -> Bool
+
 
 
 -- (e) sortiertes Zusammenfügen zweier Listen
 
-merge :: 
+--merge :: [Int] -> [Int] -> [Int]
+
 
 
 -- oder:
-merge' :: 
+--merge' :: [Int] -> [Int] -> [Int]
