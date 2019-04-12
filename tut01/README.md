@@ -2,7 +2,7 @@
 
 ## Übungsinhalt
 Implementierung elementarer Funktionen in Haskell
-- Fakutlät
+- Fakutltät
 - Fibonacci-Zahlen
 - Operationen auf Listen (Aufmultiplizieren, Löschen, Sortierung, Umkehren, Zusammenfügen)
 
