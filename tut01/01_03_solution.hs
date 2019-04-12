@@ -9,7 +9,11 @@
 prod :: [Int] -> Int
 prod [] = 1
 prod (x:xs) = x * prod xs
+-- cons Operator ":" trennt head und tail einer Liste
 
+-- oder:
+prod' :: [Int] -> Int
+prod' x = foldl (*) 1 x
 ------------------------------------------------------------------------
 
 -- (b) Umkehrung einer Listen
@@ -34,25 +38,27 @@ rem' n (x:xs)
 -- Es gilt: not (x == n) <=> x /= n
   
 -- oder:
-
 rem'' :: Int -> [Int] -> [Int]
 rem'' _ [] = []
 rem'' n (x:xs)
   | x == n = rem'' n xs
   | otherwise = x : rem'' n xs
+  
+-- oder etwas kürzer:
+rem''' :: Int -> [Int] -> [Int]
+rem''' n list = [x | x <- list , x /= n]
 
 ------------------------------------------------------------------------
 
 -- (d) Sortierung prüfen
 isOrd :: [Int] -> Bool
 isOrd [] = True
-isOrd [x] = True -- ebenso möglich: (x:[]) = True
+isOrd [x] = True
 isOrd (x:y:xs)
   | x <= y = isOrd (y:xs)
   | otherwise = False
 
 -- oder etwas kürzer:
-
 isOrd' :: [Int] -> Bool
 isOrd' [] = True
 isOrd' [x] = True
@@ -69,7 +75,6 @@ merge (x:xs) (y:ys)
   | otherwise = y : merge (x:xs) ys
 
 -- oder:
-
 merge' :: [Int] -> [Int] -> [Int]
 merge' [] ys = ys
 merge' xs [] = xs
