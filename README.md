@@ -1,5 +1,12 @@
 # Übung: Programmierung
 
+<p style="border-color: black; border-width: 1px; border-style: solid; margin-left=2px">
+  &nbsp; <b> Achtung! </b> <br>
+  &nbsp; Die Übung vom Karfreitag (19.04, 4. DS) wird nun verlegt auf
+  <b> Mittwoch, 24.04.2019, 1.DS im APB E001 </b>. <br>
+  &nbsp; Bitte entschuldigt, dass keiner der Wunschtermine umgesetzt werden konnte, aber die Raumsituation lässt derzeit nichts anderes zu.
+</p>
+
 In diesem Repository befinden sich Materialien und Lösungen, die im Rahmen meiner Übungen zur Lehrveranstaltung **Programmierung** im Sommersemester 2019 entstanden sind.
 
 Diese Lösungen wurden nicht vom Lehrstuhl erstellt und können damit trotz gründlicher Arbeit noch Fehler enthalten. Findet ihr einen solchen, dann fühlt euch eingeladen, diesen mit einem Pull-Request zu beheben.
