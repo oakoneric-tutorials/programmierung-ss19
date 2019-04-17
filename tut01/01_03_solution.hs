@@ -16,7 +16,7 @@ prod' :: [Int] -> Int
 prod' x = foldl (*) 1 x
 ------------------------------------------------------------------------
 
--- (b) Umkehrung einer Listen
+-- (b) Umkehrung einer Liste
 rev :: [Int] -> [Int]
 rev [] = []
 rev (x:xs) = rev xs ++ [x]
