@@ -23,7 +23,7 @@ z.B.
 4 `mod` 2
 tree1 `treeEq` tree2
 ```
-Beachte dazu auch das Beispiel der Modulo-Funktion aus [Übung 2](../tut02/02_01_solution.hs) und `treeEq` in [Aufgabe 1 von Blatt 3](./tut03/03_01_solution.hs).
+Beachte dazu auch das Beispiel der Modulo-Funktion aus [Übung 2](../tut02/02_01_solution.hs) und `treeEq` in [Aufgabe 1 von Blatt 3](./03_01_solution.hs).
 
 ## Partielle Applikation
 
