@@ -4,6 +4,8 @@
 Die Übung am Donnerstag, 30. Mai 2019 in der 1. DS wird verlegt auf
 **Mittwoch, 29. Mai 2019 in der 1.DS im APB E001**.
 
+Die Übung am **Freitag, 31. Mai 2019** findet regulär in der 4. DS statt!
+
 ----------------
 
 In diesem Repository befinden sich Materialien und Lösungen, die im Rahmen meiner Übungen zur Lehrveranstaltung **Programmierung** im Sommersemester 2019 entstanden sind.
