@@ -166,10 +166,5 @@ TSWLatexianTemp*
 .DS_Store
 
 #programmierung
-*.tex
-*.html
 TU_Logo_SW.pdf
 *_temp*
-tut??.pdf
-*.jpg
-*.JPG

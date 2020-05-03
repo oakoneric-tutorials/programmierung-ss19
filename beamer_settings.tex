@@ -1,0 +1,78 @@
+\usepackage[ngerman]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+
+\usetheme[nosectionnum,pagenum,sansmath, cd2018, nodin]{tud}
+
+%\usefonttheme[onlymath]{serif}
+\usepackage{opensans}
+\usepackage{stmaryrd}
+\usepackage[normalem]{ulem} % sout command
+\usepackage{txfonts}
+\DeclareMathAlphabet{\mathsc}{OT1}{cmr}{m}{sc}
+
+\usepackage{listings}
+\lstset{language=Haskell,basicstyle=\ttfamily}
+\usepackage{verbatim}
+\usepackage{bold-extra}
+
+\setbeamerfont{title}{size=\Huge, family=\bfseries\fosfamily}
+\setbeamerfont{frametitle}{size=\LARGE, family=\bfseries\fosfamily}
+
+\setbeamerfont{normal text}{size=\normalsize}
+\setbeamerfont{itemize/enumerate body}{}
+\setbeamerfont{itemize/enumerate subbody}{size=\small}
+\setbeamerfont{itemize/enumerate subsubbody}{size=\footnotesize}
+
+\usepackage{tudscrcolor}
+\usepackage{environ}
+\usepackage{tikz}
+\usetikzlibrary{arrows,positioning,decorations.pathreplacing}
+% Inspired by http://www.texample.net/tikz/examples/hand-drawn-lines/
+\usetikzlibrary{decorations.pathmorphing}
+\pgfdeclaredecoration{penciline}{initial}{
+    \state{initial}[width=+\pgfdecoratedinputsegmentremainingdistance,
+    auto corner on length=1mm,]{
+        \pgfpathcurveto%
+        {% From
+            \pgfqpoint{\pgfdecoratedinputsegmentremainingdistance}
+            {\pgfdecorationsegmentamplitude}
+        }
+        {%  Control 1
+            \pgfmathrand
+            \pgfpointadd{\pgfqpoint{\pgfdecoratedinputsegmentremainingdistance}{0pt}}
+            {\pgfqpoint{-\pgfdecorationsegmentaspect
+                    \pgfdecoratedinputsegmentremainingdistance}%
+                {\pgfmathresult\pgfdecorationsegmentamplitude}
+            }
+        }
+        {%TO
+            \pgfpointadd{\pgfpointdecoratedinputsegmentlast}{\pgfpoint{1pt}{1pt}}
+        }
+    }
+    \state{final}{}
+}
+\tikzset{handdrawn/.style={decorate,decoration=penciline}}
+\tikzset{every shadow/.style={fill=none,shadow xshift=0pt,shadow yshift=0pt}}
+
+\NewEnviron{doodlebox}[2]{%
+    \begin{tikzpicture}[decoration=penciline, decorate]%
+    \pgfmathsetseed{1237}%
+    \node (n1) [decorate,draw=#1, fill=#2,thick,align=justify, text width=0.97\textwidth, inner ysep=2mm, inner xsep=2mm] at (0,0) {\BODY};%
+    \end{tikzpicture}%
+}
+\NewEnviron{doodle}[1]{%
+    \begin{tikzpicture}[decoration=penciline, decorate]%
+    \pgfmathsetseed{1237}%
+    \node (n1) [decorate,draw=#1, fill=#1!10,thick,align=justify, text width=0.97\textwidth, inner ysep=2mm, inner xsep=2mm] at (0,0) {\BODY};%
+    \end{tikzpicture}%
+}
+
+\newcommand{\defineTitle}[3]{%
+    \newcommand{\lectureindex}{#1}%
+    \title{Programmierung}%
+    \subtitle{Übung #1: #2}%
+    \author{Eric Kunze \\ \url{eric.kunze@mailbox.tu-dresden.de} }%
+    \date{#3}%
+    \datecity{TU Dresden}%
+}

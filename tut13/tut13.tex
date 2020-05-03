@@ -1,0 +1,567 @@
+\documentclass[ngerman,a4paper, 11pt]{scrartcl}
+\usepackage[top=2.5cm,bottom=2.5cm,left=2.5cm,right=2.5cm]{geometry}
+
+\usepackage[ngerman]{babel}
+\usepackage[utf8]{inputenc}
+
+\usepackage{parskip}
+\usepackage{chngcntr}
+\usepackage{eufrak}
+\usepackage{zref-base}
+\usepackage{etoolbox}
+\usepackage{xparse}	% better macros
+\usepackage{calc}
+\usepackage{xstring}
+\usepackage{xkeyval}
+\usepackage{xifthen}
+
+\usepackage{fancyhdr} 	% customize header / footer
+\usepackage{titlesec} 	% customize titles
+\usepackage{tabularx} 	% tabularx-environment (explicitly set width of columns)
+\usepackage{tabu}
+\usepackage{longtable} 	% Tabellen mit Seitenumbrüchen
+\usepackage{multirow}
+\usepackage{booktabs}	% improved rules
+\usepackage{colortbl} 
+
+\usepackage{tocloft}	% customize toc
+
+\usepackage[scale=1]{opensans}
+\newcommand*{\osfamily}{\fontfamily{fos}\selectfont}
+\DeclareTextFontCommand{\textos}{\osfamily}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% math related packages
+% basic ams-math and enhancments
+\usepackage{amsmath,amssymb,amsfonts,mathtools}
+\usepackage{blkarray}
+\usepackage{aligned-overset}
+% add some font-related stuff
+\usepackage{lmodern}
+\usepackage{latexsym}
+\usepackage{marvosym} 	% lightning (contradiction)
+\usepackage{stmaryrd} 	% Lightning symbol
+\usepackage{bbm} 		% unitary matrix
+\usepackage{wasysym}	% add some symbols
+% \usepackage[bb=boondox]{mathalfa} %special zero using \mathbb{0}
+\usepackage{systeme}	% easy typesetting systems of equations
+\usepackage{witharrows} % arrows from one equation to another
+
+% further support for different equation setting
+\usepackage{cancel}
+\usepackage{xfrac}		% sfrac -> fractions e.g. 3/4
+\usepackage{nicefrac}
+\usepackage{units}		% units and fractions
+\usepackage{diagbox}
+
+\usepackage[thmmarks,hyperref]{ntheorem}
+\usepackage[ntheorem,framemethod=TikZ]{mdframed}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% graphics-related packages
+\usepackage[table,dvipsnames]{tudscrcolor} 
+%\usepackage[table,dvipsnames]{xcolor}
+% official colours in cooperate design TUD
+% (done) define colours -- use official tud colours
+% main colours:
+% cddarkblue, cdblue, cdgray, cdindigo, cdpurple, cddarkgreen, cdgreen, cdorange
+
+
+\usepackage{graphicx}
+\usepackage{tcolorbox}
+\usepackage[font=small,labelfont=bf]{caption} % for captions of non-floated figures
+
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.10} % in my packages used compat=1.15
+\usepgfplotslibrary{fillbetween}
+\usepackage{pgf}
+\usepackage{tikz}
+\usetikzlibrary{patterns,arrows,calc,decorations.pathmorphing,backgrounds, positioning,fit,petri,decorations.fractals}
+\usetikzlibrary{matrix}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% text-related packages
+% increase line spacing
+\usepackage[onehalfspacing]{setspace} % increase row-space
+\usepackage{ulem} 		% better underlines
+\usepackage{marginnote}	% notes at the edge
+
+% enumeration
+\usepackage{enumerate}
+\usepackage[inline]{enumitem} 		%customize label
+
+% source code
+\usepackage{listings}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                          HYPERLINKS                                 %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% (done) set hyperlink options correctly
+\usepackage[unicode,bookmarks=true]{hyperref}
+\hypersetup{
+	% pdfborder={0 0 0}			% no boxed around links
+	pdfborderstyle={/S/U/W 1},	% underlining insteas of boxes
+	linkbordercolor=cdblue,
+	urlbordercolor=cdblue
+	%	colorlinks,
+	%	citecolor=black,
+	%	filecolor=cddarkblue!80,
+	%	linkcolor=black,
+	%	urlcolor=cddarkblue!80
+}
+
+\usepackage{cleveref}
+\usepackage{bookmark}		% pdf-bookmarks
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\DeclareMathSymbol{*}{\mathbin}{symbols}{"01}
+
+\titleformat{\section}{\normalfont\sffamily\LARGE\bfseries}{Aufgabe \thesection.}{1em}{}
+\newcommand*\head{\rowfont[c]{\bfseries}}
+
+\newcommand{\menge}[1]{\ensuremath{\left\{ #1 \right\}}}
+\renewcommand{\epsilon}{\varepsilon}
+\newcommand{\num}[1]{\ensuremath{\langle \mathrm{#1} \rangle}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\theoremstyle{break}
+\theoremseparator{.}
+\theorembodyfont{}
+\newtheorem{task}{Aufgabe}
+
+\theoremstyle{nonumberplain}
+\theorempreskip{12pt}
+\theorempostskip{12pt}
+\theoremseparator{.}
+\newtheorem{solution}{Lösung}
+
+\theorembodyfont{\itshape}
+\newtheorem{hint}{Hinweis}
+
+\lstdefinestyle{haskell}{%
+	language = haskell,
+	basicstyle=\ttfamily,
+	keywordstyle=\bfseries,
+	tabsize = 2,
+	%commentstyle=
+	%morecomment=[l]{!\ },% Comment only with space after !
+	%stringstyle=\color{darkgray}\ttfamily,
+	%backgroundcolor=\color{white},
+	showstringspaces=false,
+	numbers=left,
+	numbersep=10pt,
+	%numberstyle=\color{gray}\ttfamily,
+	%identifierstyle=\color{black},
+	xleftmargin=.1\textwidth, 
+	xrightmargin=.05\textwidth,
+	breaklines=true,
+	frame=single,
+	literate=%
+	{Ö}{{\"O}}1
+	{Ä}{{\"A}}1
+	{Ü}{{\"U}}1
+	{ß}{{\ss}}2
+	{ü}{{\"u}}1
+	{ä}{{\"a}}1
+	{ö}{{\"o}}1
+}
+
+\lstdefinestyle{abstractmachine}{
+	basicstyle=\ttfamily,
+	keywordstyle=\bfseries,
+	tabsize = 2,
+	%commentstyle=
+	%morecomment=[l]{!\ },% Comment only with space after !
+	%stringstyle=\color{darkgray}\ttfamily,
+	%backgroundcolor=\color{white},
+	showstringspaces=false,
+	numbers=none,
+	numbersep=10pt,
+	%numberstyle=\color{gray}\ttfamily,
+	%identifierstyle=\color{black},
+	xleftmargin=.1\textwidth, 
+	xrightmargin=.05\textwidth,
+	breaklines=true,
+	frame=single,
+	morekeywords={*,LOAD,STORE,WRITE,READ,STOREI,LOADI,LOADA,LIT,PUSH,CALL,RET,INIT,JMP,JMC,ADD,SUB,MUL,DIV,GT,LT,GE,LE,EQ}
+	literate=%
+	{Ö}{{\"O}}1
+	{Ä}{{\"A}}1
+	{Ü}{{\"U}}1
+	{ß}{{\ss}}2
+	{ü}{{\"u}}1
+	{ä}{{\"a}}1
+	{ö}{{\"o}}1	
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\title{\Huge Übungsblatt 13}
+\subtitle{Übung zur Vorlesung ``Programmierung'' im Sommersemester 2019}
+\date{}
+\author{Lösungsvorschläge -- Eric Kunze}
+
+\begin{document}
+		
+\maketitle
+
+\begin{hint}
+	Wie immer ist auch mit diesem Lösungsvorschlag keinerlei Garantie auf Richtigkeit und Vollständigkeit verbunden. Die Lösungen sollen einen groben Anhaltspunkt liefern, wie prinzipiell verfahren wird. Bindend sind immer die in der Vorlesung geltenden Regeln und Definition.
+\end{hint}
+
+\section{Teilsprache $C_1$ und abstrakte Maschine $AM_1$}
+
+\begin{hint}
+	Die baumstrukturierten Adressen ergeben sich immer nach dem Aufrufzeitpunkt und nicht nach dem tatsächlichen Vorkommen in der Übersetzung. In den Ablaufprotokollen dürfen Zellen, deren Wert sich nicht ändert, auch leer gelassen werden (Achtung: ein Wechsel $0 \to \epsilon$ ist eine Änderung und muss eingetragen werden!). 
+\end{hint}
+
+\begin{solution}
+	\begin{enumerate}[label=(\alph*), leftmargin=*]
+		\item ~ \\[-28.5pt]
+		\begin{equation*}
+		\begin{aligned}
+		lokal-tab_{\texttt{f}} = \Bigl[ &\texttt{x}/(\text{var},\text{global},1), \texttt{h}/(\text{proc},1), \texttt{g}/(\text{proc},2), \texttt{f}/(\text{proc},3), \\
+		&\texttt{c}(\text{var},\text{lokal},1), \texttt{a}/(\text{var}, \text{lokal},-3), \texttt{b}/(\text{var-ref},-2) \Bigr]
+		\end{aligned}
+		\end{equation*}
+\begin{lstlisting}[style=abstractmachine]
+        LOAD(global, 1);
+        LIT 1;
+        GT;
+        JMC 3.1.1;
+        LOAD(lokal,-2);
+        PUSH
+        CALL 2;
+        JMP 3.1.3;
+3.1.1:	LOAD(lokal,-3);
+        PUSH;
+        LOADA(global,1);
+        PUSH;
+        CALL 1;
+3.1.3: 	LOADI(-2);
+        LIT 1;
+        ADD;
+        STORE(lokal,1);
+\end{lstlisting}
+		
+		\item 	Das übliche Ablaufprotokoll:
+		
+		\begin{center}
+			\begin{tabu}{rrcrclcccrcrl}
+				\toprule
+				\head &BZ && DK && LZK && REF && Inp && Out \\
+				\midrule \midrule
+				(& 12 &,& $\epsilon$ &,& 0:3:0:7 &,& 3 &,& 5 &,& $\epsilon$ &) \\
+				(& 13 &,& $\epsilon$ &,& 5:3:0:7 &,& 3 &,& $\epsilon$ &,& $\epsilon$ &) \\
+				(& 14 &,& 7 &,& 5:3:0:7 &,& 3 &,& $\epsilon$ &,& $\epsilon$ &) \\
+				(& 15 &,& $\epsilon$ &,& 5:3:0:7:7 &,& 3 &,& $\epsilon$ &,& $\epsilon$ &) \\
+				(& 16 &,& 1 &,& 5:3:0:7:7 &,& 3 &,& $\epsilon$ &,& $\epsilon$ &) \\
+				(& 17 &,& $\epsilon$ &,& 5:3:0:7:7:1 &,& 3 &,& $\epsilon$ &,& $\epsilon$ &) \\
+				(& 4 &,& $\epsilon$ &,& 5:3:0:7:7:1:18:3 &,& 8 &,& $\epsilon$ &,& $\epsilon$ &) \\
+				(& 5 &,& $\epsilon$ &,& 5:3:0:7:7:1:18:3:0 &,& 8 &,& $\epsilon$ &,& $\epsilon$ &) \\
+				(& 6 &,& 7 &,& 5:3:0:7:7:1:18:3:0 &,& 8 &,& $\epsilon$ &,& $\epsilon$ &) \\
+				(& 7 &,& 5:7 &,& 5:3:0:7:7:1:18:3:0 &,& 8 &,& $\epsilon$ &,& $\epsilon$ &) \\
+				(& 8 &,& 12 &,& 5:3:0:7:7:1:18:3:0 &,& 8 &,& $\epsilon$ &,& $\epsilon$ &) \\
+				(& 9 &,& $\epsilon$ &,& 12:3:0:7:7:1:18:3:0 &,& 8 &,& $\epsilon$ &,& $\epsilon$ &) \\
+				(& 18 &,& $\epsilon$ &,& 12:3:0:7 &,& 3 &,& $\epsilon$ &,& $\epsilon$ &) \\
+				(& 19 &,& $\epsilon$ &,& 12:3:0:7 &,& 3 &,& $\epsilon$ &,& 12 &) \\
+				(& 3 &,& $\epsilon$ &,& 12 &,& 0 &,& $\epsilon$ &,& 12 &) \\
+				(& 0 &,& $\epsilon$ &,& 12 &,& 0 &,& $\epsilon$ &,& 12 &) \\
+				\bottomrule
+			\end{tabu}
+		\end{center}
+	\end{enumerate}
+\end{solution}
+
+\section{Haskell}
+
+\begin{hint}
+	In der Klausur dürfen (sofern nicht anders gefordert) alle Funktionen der Standard-Bibliothek \texttt{Prelude} verwendet werden. Achtet bei den Programmieraufgaben immer auch auf die Zeit - man vergisst sich da leicht. Deswegen die Empfehlung: Programmieraufgaben immer zuletzt lösen.
+\end{hint}
+
+\begin{solution}
+	Für die Berechnung des Durchschnitts könnte man schlichtweg die Summe aller Listeneinträge durch die Länge der Liste dividieren. Dann würde die Liste aber mehrfach durchlaufen werden, was in der Aufgabenstellung ausgeschlossen ist. Also nutzen wir wieder den Umweg über eine eigene Speicherhilfsfunktion, in der wir uns in den Argumenten jeweils die aktuelle Summe und die aktuelle Listenlänge merken und am Ende die Division der Parameter ausführen. Dies sieht dann wie folgt aus:
+	
+\begin{lstlisting}[style=haskell]
+avg :: [Float] -> Float 
+avg [] = 0
+avg xs = f 0 0 xs
+	where
+		f :: Float -> Int -> [Float] -> Float
+		f sum len []     = sum / len
+		f sum len (y:ys) = f (sum + y) (len+1) ys 
+\end{lstlisting}
+	
+	Um eine Liste bezüglich eines Prädikates \texttt{p} zu partitionieren nutzen wir den günstigen Fall der Logik: es gibt nur zwei Alternativen und die eine ergibt sich als Negation der anderen. Somit können wir die beiden Komponenten des zu generierenden Paares explizit angeben: die zweite Komponente gleicht der ersten, wird jedoch um die Funktion \texttt{not} ergänzt. Für die genaue Partition können wir uns wahlweise die Listennotation wählen, oder wir greifen auf die Funktion \texttt{filter} zurück.
+	
+\begin{lstlisting}[style=haskell]
+partition ::  (a -> Bool) -> [a] -> ([a], [a]) 
+partition p xs 
+	= ( [x | x <- xs , p x], [x | x <- xs , not(p x)])
+\end{lstlisting}
+
+\begin{lstlisting}[style=haskell]
+partition ::  (a -> Bool) -> [a] -> ([a], [a]) 
+partition p xs = (filter p xs , filter (not . p) xs)
+\end{lstlisting}
+	
+	Um die maximale Wiederholung zu finden, gehen wir die Liste von hinten vollständig durch. Die Funktion \texttt{f} generiert uns dabei immer ein Tripel \texttt{(x, cxs, mxs)}, wobei in \texttt{cxs} die aktuell längste Wiederholung gespeichert wird und wenn diese größer als \texttt{mxs} (die maximale Wiederholung) ist, wird auch dieses geändert. In \texttt{x} steht schließlich das zuletzt gelesene Element.
+	
+\begin{lstlisting}[style=haskell]
+maxrep :: [Int] -> Int
+maxrep xs = let (_,_,m) = f xs in m
+	where
+		f :: [Int] -> (Int, Int, Int)
+		f []  = (0,0,0)
+		f [x] = (x,1,1)
+		f (x:xs) = let (x', cxs, mxs) = f xs
+		               c = if x == x' then cxs + 1
+		                   else 1
+		               m = max c mxs
+		           in (x,c,m)
+\end{lstlisting}
+	
+	Alternative Lösung: Wir erinnern uns an Aufgabenblatt 2 (Aufgabe 1), wo wir aufeinanderfolgende gleiche Zeichen einer Zeichenkette mit der Funktion \texttt{pack} zusammengefügt haben. Dieses Verfahren wenden wir schließlich auch hier an (nur für \texttt{Int}) und lesen anschließend die maximale Listenlänge aus.
+	
+\begin{lstlisting}[style=haskell]
+maxrep' :: [Int] -> Int
+maxrep' = maximum . length' . pack
+
+length' :: [[Int]] -> [Int]
+length' = map length
+
+pack :: [Int] -> [[Int]]
+pack [] = []
+pack (x:xs) = collect x (x:xs) : next x xs
+
+collect :: Int -> [Int] -> [Int]
+collect _ []= []
+collect y (x:xs)
+	| y == x = x : collect y xs
+	| otherwise = []
+
+next :: Int -> [Int] -> [[Int]]
+next _ [] = []
+next y (x:xs)
+	| y == x = next y xs
+	| otherwise = pack (x:xs)
+\end{lstlisting}
+\end{solution}
+	
+	
+\section{Unifikation}
+
+Wir betrachten das Rangalphabet $\Sigma = \menge{\sigma^{(2)}, \gamma^{(1)}, \alpha^{(0)}}$ und die beiden Terme
+\begin{equation*}
+	\begin{aligned}
+	t_1 &= (\sigma(\alpha), \sigma(\gamma(\alpha), \sigma(x_2, x_3 ))) \\
+	t_2 &= \sigma(\alpha, \sigma(x_1, \sigma(x_2, \sigma(x_2, x_1))))
+	\end{aligned}
+\end{equation*}
+%
+\begin{solution}
+	\arraycolsep=1pt 
+	\begin{align*}
+		\left\{ \left( 
+		\begin{array}{llclcll}
+		\sigma(\alpha, &\sigma(\gamma(\alpha)&,& \sigma(x_2 &,& x_3            &))) \\
+		\sigma(\alpha, &\sigma(x_1           &,& \sigma(x_2 &,& \sigma(x_2,x_1)&)))
+		\end{array}
+		\right) \right\}
+		%
+		\overset{\text{Dek.}}&{\Longrightarrow}
+		\left\{ \begin{pmatrix} \alpha \\ \alpha \end{pmatrix} , 
+		\left( \begin{array}{lclcll}
+		\sigma(\gamma(\alpha)&,& \sigma(x_2 &,& x_3            &)) \\
+		\sigma(x_1           &,& \sigma(x_2 &,& \sigma(x_2,x_1)&))
+		\end{array}
+		\right) \right\} \\
+		%
+		\overset{\text{2 * Dek.}}&{\Longrightarrow}
+		\left\{ \begin{pmatrix} \gamma(\alpha) \\ x_1 \end{pmatrix} , 
+		\left( \begin{array}{lcll}
+		\sigma(x_2 &,& x_3            &) \\
+		\sigma(x_2 &,& \sigma(x_2,x_1)&)
+		\end{array} \right) \right\} \\
+		%
+		\overset{\text{Dek.}}&{\Longrightarrow}
+		\left\{ 
+		\begin{pmatrix} \gamma(\alpha) \\ x_1 \end{pmatrix} , 
+		\begin{pmatrix} x_2 \\ x_2 \end{pmatrix} , 
+		\begin{pmatrix}
+		x_3 \\ \sigma(x_2, x_1)	\end{pmatrix}  
+		\right\} \\
+		%
+		\overset{\text{El.}}&{\Longrightarrow}
+		\left\{ 
+		\begin{pmatrix} \gamma(\alpha) \\ x_1 \end{pmatrix} , 
+		\begin{pmatrix}
+		x_3 \\ \sigma(x_2, x_1)	\end{pmatrix}  
+		\right\} \\
+		%
+		\overset{\text{Vert.}}&{\Longrightarrow}
+		\left\{ 
+		\begin{pmatrix} x_1 \\ \gamma(\alpha) \end{pmatrix} , 
+		\begin{pmatrix}
+		x_3 \\ \sigma(x_2, x_1)	\end{pmatrix}  
+		\right\} \\
+		%
+		\overset{\text{Subst.}}&{\Longrightarrow}
+		\left\{ 
+		\begin{pmatrix} x_1 \\ \gamma(\alpha) \end{pmatrix} , 
+		\begin{pmatrix}
+		x_3 \\ \sigma(x_2, \gamma(\alpha))	\end{pmatrix}  
+		\right\} 
+	\end{align*}
+	
+	Damit ergibt sich der allgemeinste Unifikator zu
+	\begin{align*}
+		x_1 &\mapsto \gamma(\alpha) &
+		x_2 &\mapsto x_2 &
+		x_3 &\mapsto \sigma(x_2, \gamma(\alpha))
+	\end{align*}
+\end{solution}
+
+\section{Strukturelle Induktion}
+
+\begin{hint}
+	Wir beweisen hier die Korrektheit von Aussagen bezüglich eines Programms. Entsprechend korrekt und genau müssen wir auch arbeiten. Dazu gehören die vollständige Quantifizierung aller vorkommenden Variablen und das befolgen des Induktionsprinzips. Insbesondere ist es wichtig zwischen bereits gezeigter, angenommener und noch zu zeigender Aussage zu unterscheiden.
+	
+	Man beachte beispielsweise in der folgenden Aufgabe, dass wir über die Listen \texttt{xs} induzieren, jedoch auch immer die Parameter \texttt{a} und \texttt{b} vollständig mit Typ angeben (das entspricht der vollständigen Quantifizierung). Dabei sind \texttt{a} und \texttt{b} stets beliebig gewählt, sodass die zu zeigende Aussage unabhängig von der wirklichen Ausprägung von \texttt{a} und \texttt{b} gilt.
+\end{hint}
+
+\begin{solution}
+	Wir wollen zeigen, dass für jede Liste \texttt{ys :: [Int]}
+	\begin{equation*}
+	\texttt{mul b (mul a ys) = mul (b * a) ys}
+	\end{equation*}
+	für alle \texttt{a,b :: Int} gilt, d.h. das auch die definierte skalare Listenmultiplikation assoziativ ist.
+	
+	\begin{description}
+		\item[Induktionsanfang] Sei \texttt{ys = [ ]} und seien \texttt{a,b :: Int} beliebig. Es gilt
+		\begin{equation*}
+		\texttt{mul b (mul a [ ])} \overset{(2)}{=} \texttt{mul b [ ]} \overset{(2)}{=} \texttt{[ ]} \overset{(2)}{=} \texttt{mul (b*a) [ ]}
+		\end{equation*}
+		\item[Induktionsvoraussetzung] Sei \texttt{xs :: [Int]}, sodass für alle \texttt{a,b :: Int} gilt:
+		\begin{equation*}
+		\texttt{mul b (mul a xs) = mul (b*a) xs}
+		\end{equation*}
+		\item[Induktionsschritt] Für jedes \texttt{x :: Int} und jedes beliebige \texttt{a,b :: Int} folgt dann
+		\begin{align*}
+		\texttt{mul b (mul a (x:xs))} \overset{(3)}&{=} \texttt{mul b ((a*x) : mul a xs)} \\
+		\overset{(3)}&{=} \texttt{(b*a*x) : mul b (mul a xs)} \\
+		\overset{(\text{IV})}&{=} \texttt{(b*a*x) : mul (b*a) xs} \\
+		\overset{(3)}&{=} \texttt{mul (b*a) (x:xs)}
+		\end{align*}
+	\end{description}
+\end{solution}
+
+\pagebreak
+
+\section{$\lambda$-Kalkül}
+
+\begin{hint}
+	Bei der Berechnung der Normalform ist immer auf die implizite Linksassoziativität zu achten! Bei den Auswertungen mit Fixpunktkombinator ist stets eine  Nebenrechnung zu führen, in der die Wirkunsgweise des Fixpunktkombinators gezeigt wird. Diese ist immer gleich.
+\end{hint}
+
+\begin{solution}
+	\begin{enumerate}[label=(\alph*), leftmargin=*, nolistsep]
+		\item Wir berechnen die Normalform des $\lambda$-Terms $\lambda f x.x(f(fx)) (\lambda y. xy)$.
+		\begin{align*}
+		\lambda f \underbrace{x.x(f(fx)}_{GV=\menge{x}})) (\underbrace{\lambda y. xy}_{\menge{x}}) 
+		&\Rightarrow_\alpha  
+		(\lambda f u.u(f(fu))) (\lambda y. xy) \\
+		&\Rightarrow_\beta
+		(\lambda u.u((\lambda y. xy)((\lambda y. \underbrace{xy}_{GV = \emptyset})\underbrace{u}_{FV = \menge{u}}))) \\
+		&\Rightarrow_\beta
+		(\lambda u.u((\lambda y. \underbrace{xy}_{GV = \emptyset})(\underbrace{xu}_{FV = \menge{x,u}}) )) \\
+		&\Rightarrow_\beta
+		(\lambda u . u(x(xu)))
+		\end{align*}
+		\item Die Haskell-Funktion setzt die Fallunterscheidungen in den $\lambda$-Termen mittels Pattern Matching um.
+		
+\begin{lstlisting}[style=haskell]
+f :: Int -> Int -> Int
+f x 0 = 2 * x
+f x y = 
+	| y `mod` 2 == 0 = f x (y-1)
+	| otherwise      = f (x*2) (y-1)
+\end{lstlisting}
+		
+		\item Wir zeigen zuerst wieder die Wirkunsgweise des Fixpunktkombinators.
+		\begin{equation*}
+		\begin{aligned}
+		\num{Y} \num{F}
+		= \enskip &\Bigl( \lambda z . \ \bigl( \lambda u . z (uu) \bigr) \ \bigl( \lambda u. z (uu) \bigr) \Bigr) \ \num{F} \\
+		\Rightarrow^{\beta} \quad &\Bigl( \lambda u . \num{F} (uu) \Bigr) \ \Bigl( \lambda u. \num{F} (uu) \Bigr) \qquad =: \num{Y_F} \\
+		\Rightarrow^{\beta} \quad &\num{F} \num{Y_F}
+		\end{aligned}
+		\end{equation*}
+		
+		Nun können wir die Funktion durch Berechnung der Normalform auswerten:
+		\begin{align*}
+		 \num{Y} \num{F} \num{2} \num{1} 
+		\Rightarrow^\ast & \num{Y} \num{Y_F} \num{2} \num{1} \\
+		\Rightarrow^\ast & \num{ite} \Bigl( \underbrace{\num{iszero} \num{1}}_{\Rightarrow^\ast \num{false}} \Bigr) \Bigl( \dots \Bigr) \\
+		& \biggl( \num{ite} \Bigl( \underbrace{\num{iszero} \bigl( \num{mod} \num{1} \num{2} }_{\Rightarrow^\ast \num{false}} \bigr) \Bigr) \Bigl( \dots \Bigr) \Bigl( \underbrace{\num{Y_F}}_{\Rightarrow^\ast \num{F}\num{Y_F}} \bigl( \underbrace{\num{mult} \num{2} \num{2}}_{\Rightarrow^\ast \num{4}} \bigr) \bigl( \underbrace{\num{pred} \num{1}}_{\Rightarrow^\ast \num{0}} \bigr) \Bigr) \biggr) \\
+		\Rightarrow^\ast & \num{F} \num{Y_F} \num{4} \num{0} \\
+		\Rightarrow^\ast & \num{ite} \Bigl( \underbrace{\num{iszero} \num{0}}_{\Rightarrow^\ast \num{true}} \Bigr) \Bigl( \underbrace{\num{mult} \num{4} \num{2}}_{\Rightarrow^\ast \num{8}} \Bigr) \Bigl( \dots \Bigr) \\
+		\Rightarrow^\ast & \num{8}
+		\end{align*}
+	\end{enumerate}
+\end{solution}
+
+\section{Prolog}
+
+\begin{hint}
+	Fehlerkorrektur: Die Aufgabe entspricht der Aufgabe 13.13 in der Aufgabensammlung. 
+	
+	Das angegebene und in der Vorlesung wie Übung praktizierte Schema ist stets beizubehalten. Dazu wird links immer der jeweilige Unifikator angegeben, in dieser Zeile direkt die Einsetzung und Ableitung ausgeführt und am Ende die verwendete Zeile angegeben.
+\end{hint}
+
+\begin{solution}
+	Wir geben zwei verschiedene Lösungswege an, die beide als SLD-Refutationen mit einem empty-goal enden.
+	
+	\underline{Alternative 1:}
+	
+	\begin{tabu}{>{\ttfamily}r >{\ttfamily}l >{\ttfamily}l >{\ttfamily}l}
+		& ?- & insert(<t1>, <t2>, X). \\
+		\{X = tree(a, LT1, RT1)\} & ?- & insert(tree(b, nil, nil), <t2>, LT1), \\
+		&&insert(tree(v, nil, nil), <t2>, RT1). & \% 6 \\
+		\{LT1 = tree(b, LT2, RT2)\} & ?- & insert(nil, <t2>, LT2), \\
+		&& insert(nil, <t2>, RT2), \\
+		&& insert(tree(v,nil,nil), <t2>, RT1). & \% 6 \\
+		\{LT2 = nil, RT2 = nil\} & ?-* & insert(tree(v, nil, nil), <t2>, RT1). & \% 4 \\
+		\{RT1 = <t2>\} & ?- & istree(<t2>). & \% 5 \\
+		& ?-* & istree(nil), istree(nil), istree(nil). & \% 2 \\
+		& ?-* &. & \% 4
+	\end{tabu}
+
+	Somit ist \texttt{X = tree(a, tree(b, nil, nil), <t2>)}.
+
+	\underline{Alternative 2:}
+	
+	\begin{tabu}{>{\ttfamily}r >{\ttfamily}l >{\ttfamily}l >{\ttfamily}l}
+		& ?- & insert(<t1>, <t2>, X). \\
+		\{X = tree(a, LT1, RT1)\} & ?- & insert(tree(b, nil, nil), <t2>, LT1), \\
+		&&insert(tree(v, nil, nil), <t2>, RT1). & \% 6 \\
+		\{LT1 = tree(b, LT2, RT2)\} & ?- & insert(nil, <t2>, LT2), \\
+		&& insert(nil, <t2>, RT2), \\
+		&& insert(tree(v,nil,nil), <t2>, RT1). & \% 6 \\
+		\{LT2 = nil, RT2 = nil\} & ?-* & insert(tree(v, nil, nil), <t2>, RT1). & \% 4 \\
+		%
+		\{RT1 = tree(v, LT3, RT3)\} & ?- & insert(nil, <t2>, LT3), \\
+		&& insert(nil, <t2>, RT3). & \% 6 \\
+		\{RT3 = nil, LT3 = nil\} & ?-* & . & \% 4 
+	\end{tabu}
+
+	Somit ist \texttt{X = tree(a, tree(b, nil, nil), tree(v, nil, nil))}.
+\end{solution}
+\end{document}

@@ -1,0 +1,271 @@
+\documentclass[aspectratio=1610,onlymath, ngerman]{beamer}
+% \documentclass[aspectratio=1610,onlymath,handout]{beamer}
+\usepackage[ngerman]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+
+\usetheme[nosectionnum,pagenum,sansmath, cd2018, nodin]{tud}
+
+%\usefonttheme[onlymath]{serif}
+\usepackage{opensans}
+\usepackage{stmaryrd}
+\usepackage[normalem]{ulem} % sout command
+\usepackage{txfonts}
+\DeclareMathAlphabet{\mathsc}{OT1}{cmr}{m}{sc}
+
+\usepackage{listings}
+
+\setbeamerfont{title}{size=\Huge, family=\bfseries\fosfamily}
+\setbeamerfont{frametitle}{size=\LARGE, family=\bfseries\fosfamily}
+
+\setbeamerfont{normal text}{size=\normalsize}
+\setbeamerfont{itemize/enumerate body}{}
+\setbeamerfont{itemize/enumerate subbody}{size=\small}
+\setbeamerfont{itemize/enumerate subsubbody}{size=\footnotesize}
+
+\usepackage{tudscrcolor}
+\usepackage{environ}
+\usepackage{tikz}
+\usetikzlibrary{arrows,positioning,decorations.pathreplacing}
+% Inspired by http://www.texample.net/tikz/examples/hand-drawn-lines/
+\usetikzlibrary{decorations.pathmorphing}
+\pgfdeclaredecoration{penciline}{initial}{
+    \state{initial}[width=+\pgfdecoratedinputsegmentremainingdistance,
+    auto corner on length=1mm,]{
+        \pgfpathcurveto%
+        {% From
+            \pgfqpoint{\pgfdecoratedinputsegmentremainingdistance}
+            {\pgfdecorationsegmentamplitude}
+        }
+        {%  Control 1
+            \pgfmathrand
+            \pgfpointadd{\pgfqpoint{\pgfdecoratedinputsegmentremainingdistance}{0pt}}
+            {\pgfqpoint{-\pgfdecorationsegmentaspect
+                    \pgfdecoratedinputsegmentremainingdistance}%
+                {\pgfmathresult\pgfdecorationsegmentamplitude}
+            }
+        }
+        {%TO
+            \pgfpointadd{\pgfpointdecoratedinputsegmentlast}{\pgfpoint{1pt}{1pt}}
+        }
+    }
+    \state{final}{}
+}
+\tikzset{handdrawn/.style={decorate,decoration=penciline}}
+\tikzset{every shadow/.style={fill=none,shadow xshift=0pt,shadow yshift=0pt}}
+
+\NewEnviron{doodlebox}[2]{%
+    \begin{tikzpicture}[decoration=penciline, decorate]%
+    \pgfmathsetseed{1237}%
+    \node (n1) [decorate,draw=#1, fill=#2,thick,align=justify, text width=0.97\textwidth, inner ysep=2mm, inner xsep=2mm] at (0,0) {\BODY};%
+    \end{tikzpicture}%
+}
+\NewEnviron{doodle}[1]{%
+    \begin{tikzpicture}[decoration=penciline, decorate]%
+    \pgfmathsetseed{1237}%
+    \node (n1) [decorate,draw=#1, fill=#1!10,thick,align=justify, text width=0.97\textwidth, inner ysep=2mm, inner xsep=2mm] at (0,0) {\BODY};%
+    \end{tikzpicture}%
+}
+
+\newcommand{\defineTitle}[3]{%
+    \newcommand{\lectureindex}{#1}%
+    \title{Programmierung}%
+    \subtitle{Übung #1: #2}%
+    \author{Eric Kunze \\ \url{eric.kunze@mailbox.tu-dresden.de} }%
+    \date{#3}%
+    \datecity{TU Dresden}%
+}
+
+\defineTitle{1}{Einführung in Haskell}{\today}
+\renewcommand{\emph}[1]{\textbf{#1}}
+\newcommand{\coloremph}[1]{\textcolor{cdpurple}{#1}}
+\DeclareMathSymbol{*}{\mathbin}{symbols}{"01}
+    
+\begin{document}
+    \maketitle
+    
+    \begin{frame}\frametitle{Allgemeine Hinweise}
+        \begin{minipage}{\dimexpr0.5\linewidth-\fboxrule-\fboxsep}
+            \emph{Vorlesung:}
+            \begin{itemize}
+                \item Freitag, 2. DS (9:20 - 10:50), HSZ/0003
+                \item Skript und Aufgabensammlung im Copyshop \glqq Die Kopie\grqq
+            \end{itemize}
+            
+            \medskip
+            
+            \emph{Übungen:}
+            \begin{itemize}
+                \item meine Übungsgruppen: \\
+                Donnerstag, 1. DS und Freitag, 4. DS
+            \end{itemize}
+           \end{minipage}
+           \pause
+           \begin{minipage}{\dimexpr0.5\linewidth-\fboxrule-\fboxsep}
+            \begin{doodle}{cddarkblue}
+                \emph{Github:} \\
+                \url{https://github.com/oakoneric/programmierung-ss19}
+            \end{doodle}
+        \end{minipage}
+        \pause
+        \begin{doodle}{cdorange}
+            {\normalsize \bfseries Verlegungen:} \par 
+            \smallskip
+            Uns betreffen zwei Feiertage: \quad
+            \emph{Karfreitag} (Freitag, 19.04.) und \emph{Himmelfahrt} (Donnerstag, 30.05.) \par \smallskip
+            
+            Mögliche Alternativtermine:
+            \begin{itemize}
+                \item Montag, 3. DS
+                \item Montag, 5. DS
+                \item Mittwoch, 2. DS
+                \item Donnerstag, 2. DS (gerade Woche, insbesondere am 18.04.)
+            \end{itemize}
+        \end{doodle}  
+    \end{frame}
+
+        
+%    \begin{frame}\frametitle{Haskell \& funktionale Programmierung}
+%        Haskell ist im Gegensatz zu beispielsweise $C$ eine funktionale Programmiersprache. Wir programmieren also nicht \textit{wie} berechnet wird, sondern \textit{was} berechnet wird. \\
+%        \medskip
+%        \emph{Mathe:} Die Addition $n + m$ können wir auch als Funktion  
+%        \begin{align*}
+%            + \colon \mathbb{N} \times \mathbb{N} \to \mathbb{N} \qquad
+%            n+m = 
+%            \begin{cases}
+%            n & m=0 \\
+%            n + (m-1) &\text{sonst} \\
+%            \end{cases}
+%        \end{align*}
+%        definieren. \\
+%       
+%        \medskip
+%        
+%        \emph{Informatik:} Aus \texttt{z = n + m} in $C$ können wir eine Funktion \texttt{add :: Int -> Int, add n 0 = n, add n m = 1 + add n (m-1)} spezifizieren, die genau die Addition durchführt.
+%%        \begin{lstlisting}[language=Haskell]
+%%            add :: Int -> Int
+%%            add n 0 = n
+%%            add n m = 1 + add n (m-1)
+%%        \end{lstlisting}
+%
+%        \medskip
+%        $\Longrightarrow$ Wir programmieren also \textit{Funktionen} und nähern uns daher der Mathematik an.
+%    \end{frame}
+
+    \begin{frame}\frametitle{Haskell installieren und compilieren}
+        \begin{itemize}
+            \item \emph{Glasgow Haskell Compiler} (ghc(i)) : \\ \url{https://www.haskell.org/ghc/}
+            \item Ubuntu: \\
+            \texttt{sudo apt install ghc}
+            
+            \medskip
+            
+            \item \emph{Terminal:} \\
+            \texttt{ghci <modulname>}
+            \item \emph{Module laden: } \\
+            \texttt{:load <modulname>}
+        \end{itemize}
+    \end{frame}
+
+    \begin{frame}\frametitle{Haskell \& Listen}
+        \begin{itemize}
+            \item Wenn \texttt{a} ein Typ ist, dann bezeichnet \texttt{[a]} den Typ ``Liste mit Elementen vom Typ \texttt{a}'', insbesondere
+            haben alle Elemente einer Liste den gleichen Typ
+            \bigskip \pause
+            \item \emph{cons-Operator `` \texttt{:} ''} \qquad Trennung von head und tail einer Liste \\
+            \texttt{[ x1 , x2 , x3 , x4 , x5] = x1 : [x2 , x3 , x4 , x5]}
+            \bigskip \pause
+            \item \emph{Verkettungsoperator `` \texttt{++} ''} \qquad Verkettung zweier Listen gleichen Typs \\
+            \texttt{[x1 , x2 , x3] ++ [x4 , x5 , x6 , x7] = [x1 , x2 , x3 , x4 , x5 , x6 , x7]}
+        \end{itemize}
+    \end{frame}
+
+    \begin{frame}\frametitle{Das Prinzip der Rekursion}
+        \begin{doodle}{cdorange}
+            \emph{Satz.}
+            Sei $B$ eine Menge, $b \in B$ und $F \colon B \times \mathbb{N} \to B$ eine Abbildung. Dann liefert die Vorschrift
+            \begin{subequations}
+                \begin{align}
+                    f(0) &:= b \\
+                    f(n+1) &:= F(f(n),n) \quad \forall n \in \mathbb{N} \label{eq: rekursionsschritt}
+                \end{align}
+            \end{subequations}
+            genau eine Abbildung $f : \mathbb{N} \to B$.
+        \end{doodle} \\
+        \bigskip
+        \pause
+        \emph{Beweis.} \qquad vollständige Induktion:
+        \begin{description}
+            \item[(IA)] Für $n=0$ ist $f(0) = b$ eindeutig definiert.
+            \item[(IS)] Angenommen $f(n)$ sei eindeutig definiert. Wegen (\ref{eq: rekursionsschritt}) ist dann auch $f(n+1)$ eindeutig definiert.
+        \end{description}
+        
+        \bigskip
+        
+        Man kann dieses Prinzip der Rekursion auf weitere Mengen (unabhängig von den natürlichen Zahlen) erweitern ($\nearrow$ Formale Systeme).
+    \end{frame}
+
+    \begin{frame}\frametitle{Aufgabe 1 -- Fakultätsfunktion}
+        Fakultät
+        \begin{equation}
+            n! = \prod_{i=1}^n i
+        \end{equation}
+        
+        \medskip
+        \pause
+        
+        Daraus bilden wir nun eine Rekursionsvorschrift:
+        \begin{equation}
+           n! = \coloremph{\boldsymbol{n}} * \prod_{i=1}^{\coloremph{\boldsymbol{n-1}}} i= n * (n-1)!
+        \end{equation}
+        
+        \medskip
+        \pause
+        
+        Um die Rekursion vollständig zu definieren, benötigen wir einen (oder i.a. mehrere) \emph{Basisfall}. Wann können wir also die Rekursion der Fakultät abbrechen?
+        \begin{equation}
+            0 ! = 1 \qquad 1 ! = 1 \qquad 2! = 2 \qquad \cdots
+        \end{equation}
+        $\Rightarrow$ Welcher Basisfall ist sinnvoll? \qquad $0! = 1$.
+    \end{frame}
+
+    \begin{frame}\frametitle{Aufgabe 2 -- Fibonacci-Zahlen}
+        \begin{equation}
+            f_n := \begin{cases}
+            \enskip 1 & \text{falls } n = 0 \\
+            \enskip 1 & \text{falls } n = 1 \\
+            \enskip f_{n-1} + f_{n-2} & \text{sonst}
+            \end{cases}
+        \end{equation}
+        
+        \medskip
+        \pause
+        
+        $\Rightarrow$ Rekursionsvorschrift schon gegeben. \\
+        
+         \bigskip 
+         \begin{minipage}{\dimexpr0.5\linewidth-\fboxrule-\fboxsep}
+             \emph{Verfahren ohne Rekursion.} \\ \smallskip
+             
+             \begin{tikzpicture}[decoration=penciline, decorate]%
+             \pgfmathsetseed{1237}%
+             \node (n1) [decorate,draw=cdindigo, fill=cdindigo!10,thick,align=justify, , inner ysep=2mm, inner xsep=2mm, rectangle] at (0,0) {$f_{i-2}$};%
+             \node (n2) [decorate,draw=cdindigo, fill=cdindigo!10,thick,align=justify, , inner ysep=2mm, inner xsep=2mm, rectangle] at (1.5,0) {$f_{i-1}$};%
+             \node (n3) [decorate,draw=cdindigo, fill=cdindigo!10,thick,align=justify, , inner ysep=2mm, inner xsep=2mm, rectangle] at (3,0) {$n$};%
+             \node (n4) [decorate,draw=cdindigo, fill=cdindigo!10,thick,align=justify, , inner ysep=2mm, inner xsep=2mm, rectangle] at (0,-1) {$f_{i-1}$};%
+             \node (n5) [decorate,draw=cdindigo, fill=cdindigo!10,thick,align=justify, , inner ysep=2mm, inner xsep=2mm, rectangle] at (1.5,-1) {$f_{i-2} + f_{i-1}$};%
+             \node (n6) [decorate,draw=cdindigo, fill=cdindigo!10,thick,align=justify, , inner ysep=2mm, inner xsep=2mm, rectangle] at (3,-1) {$n-1$};%
+             \path[->] (n2) edge [bend left=0] (n4);
+             \end{tikzpicture}%
+         \end{minipage}
+         \pause
+         \begin{minipage}{\dimexpr0.5\linewidth-\fboxrule-\fboxsep}
+             \emph{Anmerkung.} \\ \smallskip
+             
+             Explizite Formel:
+             \begin{equation}
+             f_n = \frac{\Phi^n - \left(-\frac{1}{\Phi} \right)^n}{\sqrt{5}} \qquad \text{ mit } \qquad \Phi = \frac{1 + \sqrt{5}}{2}
+             \end{equation}
+         \end{minipage}
+    \end{frame}
+\end{document}

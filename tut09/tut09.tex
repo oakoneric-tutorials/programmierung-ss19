@@ -1,0 +1,128 @@
+\documentclass[aspectratio=1610,onlymath, ngerman]{beamer}
+% \documentclass[aspectratio=1610,onlymath,handout]{beamer}
+\input{../beamer_settings}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\defineTitle{9}{Logik-Programmierung in Prolog}{07.~Juni~2019}
+
+\renewcommand{\emph}[1]{\textbf{#1}}
+\newcommand{\coloremph}[1]{\textcolor{cdpurple}{#1}}
+\newcommand{\col}[1]{\textcolor{cdpurple}{\boldsymbol{#1}}}
+\newcommand{\coll}[1]{\textcolor{cddarkgreen}{\boldsymbol{#1}}}
+\newcommand{\colll}[1]{\textcolor{cdorange}{\boldsymbol{#1}}}
+
+\DeclareMathSymbol{*}{\mathbin}{symbols}{"01}
+
+\renewcommand*{\headerinfo}{\color{cdgray}\textbf{Github:} \url{https://github.com/oakoneric/programmierung-ss19}}
+\arraycolsep2pt
+
+\usepackage{aligned-overset}
+\usepackage{array}
+\chardef\_=`_
+
+\newcommand{\cw}[1]{\texttt{#1}}
+\newcommand{\step}[2][]{\ensuremath{\overset{{#1} (\text{#2})}{=}}}
+\newcommand*{\astep}[2][]{\ensuremath{\overset{{#1} (\text{#2})}&{=}}}
+
+\newcommand{\num}[1]{\ensuremath{\langle #1 \rangle}}
+
+
+\begin{document}
+    \maketitle
+    
+	\begin{frame} \frametitle{Aufgabe 1 -- Teil (a)}
+	\small
+		\begin{ttfamily}
+			\begin{tabbing}
+				1 \quad \= nat(0). \\
+				2 \> nat(s(X)) :- nat(X). \\[9pt]
+				3 \> sum(0,Y,Y) :- nat(Y). \\
+				4 \> sum(s(X), Y, s(S)) :- sum(X,Y,S). \\[9pt] \pause
+				5 \> lt(0, s(M)) \pause :- nat(M). \\ \pause
+				6 \> lt(s(N),s(M)) \pause :- lt(N,M). \\[9pt] \pause
+				7 \> div(0,M,0) \pause :- lt(0,M). \\ \pause
+				8 \> div(N,M,0) \pause :- lt(N,M). \\ \pause
+				9 \> div(N,M,s(Q)) \pause :- lt(0,M), sum(M,V,N), div(V,M,Q).
+			\end{tabbing}
+		\end{ttfamily}	
+		
+	\end{frame}
+    
+    \begin{frame} \frametitle{Aufgabe 1 -- Teil (b)}
+	    \begin{alignat*}{2}
+		    &\texttt{?- div(\num{3}, \num{2}, \num{1})} \\
+		    &\texttt{?- lt(\num{0}, \num{2}) , sum(\num{2}, V1, \num{3}) , div(V1, \num{2}, \num{0})} \qquad && \texttt{\% 9 } \\
+		    &\texttt{?- nat(\num{1}) , sum(\num{2}, V1, \num{3}) , div(V1, \num{2}, \num{0})}  && \texttt{\% 5} \\
+		    &\texttt{?- nat(\num{0}) , sum(\num{2}, V1, \num{3}) , div(V1, \num{2}, \num{0})} && \texttt{\% 2} \\
+		    &\texttt{?- sum(\num{2}, V1, \num{3}) , div(V1, \num{2}, \num{0}).} && \texttt{\% 1} \\
+		    &\texttt{?-* sum(\num{0}, V1, \num{1}) , div(V1, \num{2}, \num{0}).} && \texttt{\% 4} \\
+		    \texttt{\{V1=\num{1}\}} \quad &\texttt{?- nat(\num{1}) , div(\num{1}, \num{2}, \num{0}).} && \texttt{\% 3} \\
+		    &\texttt{?- nat(\num{0}) , div(\num{1}, \num{2}, \num{0}).} \quad && \texttt{\% 2} \\
+		    &\texttt{?- div(\num{1}, \num{2}, \num{0}).} && \texttt{\% 1} \\
+		    &\texttt{?- lt(\num{1}, \num{2}).} &&\texttt{\% 8} \\
+		    &\texttt{?- lt(\num{0}, \num{1}).} &&\texttt{\% 6} \\
+		    &\texttt{?- nat(\num{0}).} &&\texttt{\% 5} \\
+		    &\texttt{?- .} &&\texttt{\% 1} \\
+	    \end{alignat*}
+	\end{frame}
+    
+    \begin{frame} \frametitle{Aufgabe 2}
+    \small
+    	\setlength{\tabcolsep}{2pt}
+   		\begin{tabular}{>{\ttfamily}l >{\ttfamily}c >{\ttfamily}c >{\ttfamily}c >{\ttfamily}r >{\ttfamily}c >{\ttfamily}l}
+	   		eval( & X         &, &X &) & :- & nat(X). \\
+	   		eval( & plus(L,R) &, &X &) & :- & eval(L,LE), eval(R,RE), sum(LE,RE,X). \\
+	   		eval( & minus(L,R) &, &X &) & :- & eval(L,LE), eval(R,RE), sum(RE, X, LE).
+   		\end{tabular}
+	\end{frame}
+    
+    \begin{frame} \frametitle{Aufgabe 3}
+    \small
+	    \setlength{\tabcolsep}{2pt}
+	    \begin{tabular}{>{\ttfamily\scriptsize}l >{\ttfamily}l >{\ttfamily}c >{\ttfamily}c >{\ttfamily}c >{\ttfamily}r >{\ttfamily}c >{\ttfamily}l}
+	    	1 & subt( & X         &, &X &).&& \\
+	    	2 & subt( & S1 &, &s(\_, T2) &) & :- & subt(S1,T2). \\
+	    	3 & subt( & S1 &, &s(T1, \_) &) & :- & subt(S1,T1). \\
+	    \end{tabular}
+    
+    	\bigskip \pause
+    	
+    	\emph{Teil (a).}
+    	
+    \footnotesize
+    
+    	\begin{tabular}{>{\ttfamily}r l >{\ttfamily}l >{\ttfamily}l}
+    		& ?- & subt(s(X,Y), s(s(a,b), s(b,a))). \\
+    		\{X = s(a,b), Y=s(b,a)\} & ?- & . & \% 1 \\[9pt] %
+    		%
+    		& ?- & subt(s(X,Y), s(s(a,b), s(b,a))). \\
+    		& ?- & subt(s(X,Y), s(b,a)). & \% 2 \\
+    		\{X = b, Y=a\} & ?- & . & \% 1 \\[9pt]
+    		%
+	    	& ?- & subt(s(X,Y), s(s(a,b), s(b,a))). \\
+	    	& ?- & subt(s(X,Y), s(a,b)). & \% 3 \\
+	    	\{X = a, Y=b \} & ?- & . & \% 1
+	    \end{tabular}
+	\end{frame}
+
+	\begin{frame} \frametitle{Aufgabe 3}
+	\small
+		
+		\emph{Teil (b).}
+		
+		\begin{tabular}{>{\ttfamily}r l >{\ttfamily}l >{\ttfamily}l}
+			& ?- & subt(s(a,a), X). \\
+			\{X = s(a,a)\} &?- & . & \% 1 \\[9pt] %
+			%
+			& ?- & subt(s(a,a), X). \\
+			\{X = s(\_ , X1) \} & ?- & subt(s(a,a), X1). & \% 2 \\
+			\{X1 = s(a,a)\} & ?- & . & \% 1 $\qquad \Rightarrow$ X = s(a,s(a,a))\\[9pt]
+			%
+			& ?- & subt(s(a,a), X). \\
+			\{X = s(X2, \_)\}& ?- & subt(s(a,a), X2). & \% 3 \\
+			\{X2 = s(a,a) \} & ?- & . & \% 1 $\qquad \Rightarrow$ X = s(s(a,a),c)
+		\end{tabular}
+	\end{frame}
+\end{document}

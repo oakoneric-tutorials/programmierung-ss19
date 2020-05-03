@@ -1,0 +1,391 @@
+\documentclass[aspectratio=1610,onlymath, ngerman]{beamer}
+% \documentclass[aspectratio=1610,onlymath,handout]{beamer}
+\input{../beamer_settings}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\defineTitle{8}{$\lambda$-Kalkül \& Einführung in Prolog}{31.~Mai~2019}
+
+\renewcommand{\emph}[1]{\textbf{#1}}
+\newcommand{\coloremph}[1]{\textcolor{cdpurple}{#1}}
+\newcommand{\col}[1]{\textcolor{cdpurple}{\boldsymbol{#1}}}
+\newcommand{\coll}[1]{\textcolor{cddarkgreen}{\boldsymbol{#1}}}
+\newcommand{\colll}[1]{\textcolor{cdorange}{\boldsymbol{#1}}}
+
+\DeclareMathSymbol{*}{\mathbin}{symbols}{"01}
+
+\renewcommand*{\headerinfo}{\color{cdgray}\textbf{Github:} \url{https://github.com/oakoneric/programmierung-ss19}}
+\arraycolsep2pt
+
+\usepackage{aligned-overset}
+\newcommand{\cw}[1]{\texttt{#1}}
+\newcommand{\step}[2][]{\ensuremath{\overset{{#1} (\text{#2})}{=}}}
+\newcommand*{\astep}[2][]{\ensuremath{\overset{{#1} (\text{#2})}&{=}}}
+
+\newcommand{\num}[1]{\ensuremath{\langle #1 \rangle}}
+
+\begin{document}
+    \maketitle
+    
+%    \begin{frame} \frametitle{Aufgabe 6.2}
+%	    \begin{minipage}{\dimexpr0.75\linewidth-\fboxrule-\fboxsep}
+%	    	\begin{align*}
+%	    	\num{pow} \num{2} = \enskip &\Bigl( \lambda \col{n}fz \ . \ \col{n} \ ( \colll{\lambda gx . g (gx)}) \ f z \Bigr) \, \col{\Bigl( \lambda xy \ .  \ x(xy)) \Bigr)} \\
+%	    	%
+%	    	\Rightarrow^{\beta} \enskip &\Bigl( \lambda fz \ . \ \Bigl( \lambda \col{x}y \ .  \ \col{x}(\col{x}y)) \Bigr) \ \col{\Bigl( \lambda gx . g (gx) \Bigr)} \ f \ z \Bigr) \\
+%	    	%
+%	    	\Rightarrow^{\beta} \enskip &\Bigl( \lambda fz \ . \ \biggl( \lambda y \ . \  \Bigl( \lambda \col{g}x . \col{g} (\col{g}x) \Bigr) \, \col{\Bigl( (\lambda gx . g (gx) ) \ y \Bigr)} \biggr) \  f \ z \Bigr) \\
+%	    	%
+%	    	\Rightarrow^{\beta} \enskip &\Bigl( \lambda fz \ . \ \biggl( \lambda y \ . \  \Bigl( \coll{\lambda x} . \Bigl( (\lambda gx . g (gx) ) \ y \Bigr) \, \Bigl( \bigl( (\lambda gx . g (gx) ) \ y \bigr) \ x \Bigr) \, \Bigr) \,  \biggr) \  f \ z \Bigr) \\
+%	    	%
+%	    	\Rightarrow^{\beta} \enskip &\Bigl( \lambda fz \ . \ \biggl( \lambda y \coll{x} \ . \Bigl( (\lambda \col{g}x . \col{g} (\col{g}x) ) \ \col{y} \Bigr) \, \Bigl( \bigl( (\lambda \col{g}x . \col{g} (\col{g}x) ) \ \col{y} \bigr) \ x \Bigr) \,  \biggr) \  f \ z \Bigr) \\
+%	    	%
+%	    	\Rightarrow^{\beta} \enskip &\Bigl( \lambda fz \ . \ \biggl( \lambda y x \ . \Bigl( \lambda x . y (yx)  \Bigr) \, \Bigl( (\lambda \col{x} . y (y\col{x}) ) \ \col{x} \Bigr) \,  \biggr) \  f \ z \Bigr) \\
+%	    	%
+%	    	\Rightarrow^{\beta} \enskip &\Bigl( \lambda fz \ . \ \biggl( \lambda y x \ . \Bigl( \lambda \col{x} . y (y\col{x})  \Bigr) \, \col{\Bigl( y (yx) \Bigr)} \,  \biggr) \  f \ z \Bigr) \\
+%	    	%
+%	    	\Rightarrow^{\beta} \enskip &\Bigl( \lambda fz \ . \ \biggl( \lambda \col{y} x \ . \col{y} \ \Bigl(\col{y} \ \bigl( \col{y} \ (\col{y}x) \bigr)\Big) \  \biggr) \  \col{f} \ z \Bigr) \\
+%	    	%
+%	    	\Rightarrow^{\beta} \enskip &\Bigl( \lambda fz \ . \ \biggl( \lambda \col{x} \ . f \ \Bigl(f \ \bigl( f \ (f \col{x}) \bigr)\Big) \  \biggr) \ \col{z} \Bigr) \qquad
+%	    	%
+%	    	\Rightarrow^{\beta} \enskip \Bigl( \lambda fz \ . \ f \ (f \ ( f \ (f z) \ ) \ ) \  )  \Bigr) = \num{4} \\
+%	    	\end{align*}
+%	    \end{minipage}
+%	    \pause
+%	    \begin{minipage}{\dimexpr0.25\linewidth-\fboxrule-\fboxsep}
+%	    	\small \centering
+%	    	\emph{Teil (b)} \\[-\baselineskip]
+%	    	\begin{equation*} f(n) = s^n \end{equation*}
+%	    	
+%	    	\bigskip
+%	    	
+%	    	
+%	    	\emph{Teil (c)} \\[-\baselineskip]
+%	    	\begin{equation*} g(n,m) = m^n \end{equation*}
+%	    	\footnotesize
+%	    	\begin{equation*} 
+%	    	\num{pow'} = \Bigl( \lambda n \colll{m} f z . n \colll{m} f z \Big) 
+%	    	\end{equation*}
+%	    	
+%	    \end{minipage}
+%	    
+%	\end{frame}
+    
+    \begin{frame} \frametitle{Aufgabe 6.3 -- Teil (b)}
+    \small
+	    \begin{align*}
+	    \num{Y} \num{F} \num{6} \num{5} \num{3} &\Rightarrow^\ast \num{F} \num{Y_F} \num{6} \num{5} \num{3} \\
+	    &\Rightarrow^\ast \num{ite} \ 
+	    (\underbrace{\num{iszero} \ (\num{sub}\num{6}\num{5})}_{\Rightarrow^\ast \num{false}}) \ 
+	    ( \dots ) \\
+	    & \phantom{\Rightarrow^\ast \num{ite}} \ (\num{succ} (\num{Y_F}(\underbrace{\num{pred}\num{6}}_{\Rightarrow^\ast \num{5}})(\underbrace{\num{succ}\num{5}}_{\Rightarrow^\ast \num{6}})(\underbrace{\num{mult}\num{2}\num{3}}_{\Rightarrow^\ast \num{6}}))) \\
+	    &\Rightarrow^\ast \num{succ} \  ( \ \num{Y_F}\num{5}\num{6}\num{6} \ ) \\
+	    &\Rightarrow^\ast \num{succ} \ ( \ \num{F} \num{Y_F} \num{5}\num{6}\num{6} \ ) \\
+	    &\Rightarrow^\ast \num{succ} \ ( \ \num{ite} \  (\underbrace{\num{iszero}(\num{sub}\num{5}\num{6})}_{\Rightarrow^\ast \num{true}}) \ (\underbrace{\num{add}\num{6}\num{6}}_{\Rightarrow^\ast \num{12}})  \ (\dots) \ ) \\
+	    &\Rightarrow^\ast \num{succ} \ \num{12} \\
+	    &\Rightarrow^\ast \num{13}
+	    \end{align*}
+	\end{frame}
+    
+    \begin{frame} \frametitle{Aufgabe 6.3 -- Teil (c)}
+    \small
+    
+	    \begin{ttfamily}
+	    	g :: Int -> Int -> Int \\
+	    	g 0 y  = 2 * (y + 1) \\
+	    	g x 0 = 2 * (x + 1) \\
+	    	g x y = 4 + g (x - 1)  (y - 1) \\
+	    \end{ttfamily}
+    
+	\end{frame}
+    
+    \begin{frame} \frametitle{Aufgabe 6.3 -- Teil (c)}
+    \small
+	    \begin{alignat*}{3}
+	    \num{G} = \enskip & \Biggl( \lambda g xy \ . \ \Bigl( &&\num{ite} \ && \bigl( \num{iszero} \ x \bigr) \\
+	    &&&&& \bigl( \num{mult} \ \num{2} \ (\num{succ} y) \ \bigr) \\
+	    &&&&& \Bigl( 
+	    \begin{alignedat}[t]{1}
+	    \num{ite} \ &(\num{iszero} \ y) \\
+	    & \bigl( \num{mult} \ \num{2} \ (\num{succ} x) \bigr) \\
+	    & \bigl( \num{add} \ \num{4} \enskip g \ (\num{pred} x \ \num{pred} y)  \ \bigr) \\				
+	    \end{alignedat} \\
+	    &&&&& \Bigr) \\
+	    &&& \Bigr) \\
+	    & \Biggr)
+	    \end{alignat*}
+	\end{frame}
+	
+	\begin{frame} \frametitle{Aufgabe 1 -- Teil (a)}
+		\small
+		
+		\begin{ttfamily}
+			g :: Int -> Int -> Int \\
+			g m 0 = m \\
+			g m 1 = m + 1 \\
+			g m n = g m (n - 2) + g m (n - 1) \\
+		\end{ttfamily}
+	
+	\end{frame}
+	
+	\begin{frame} \frametitle{Aufgabe 1 -- Teil (a)}
+	\small
+		\begin{alignat*}{3}
+		\num{G} = \enskip & \Biggl( \lambda g mn \ . \ \Bigl( &&\num{ite} \ && \bigl( \num{iszero} \ n \bigr) \\
+		&&&&& \bigl( \ m \ \bigr) \\
+		&&&&& \Bigl( 
+		\begin{alignedat}[t]{1}
+		\num{ite} \ &(\num{iszero} \ (\num{pred} \ \num{n})) \\
+		& \bigl( \num{succ} \ m \bigr) \\
+		& \bigl( \num{add} \ (g \ m \ (\num{sub} \ n \ \num{2})) \ (g \ m \ (\num{pred} \ n)) \ \bigr) \\				
+		\end{alignedat} \\
+		&&&&& \Bigr) \\
+		&&& \Bigr) \\
+		& \Biggr)
+		\end{alignat*}
+	\end{frame}
+
+
+	\begin{frame} \frametitle{Aufgabe 1 -- Teil (b)}
+	\small
+		\begin{equation*}
+			\num{F} = \Biggl( \lambda \ f xy \ . \ \num{ite} \ \Bigl(\num{iszero} \ y \Bigr) \ \num{1} \ \Bigl( \num{mult} \ x \ (f \ x \ (\num{pred} \ y)) \Bigr) \Biggr)
+		\end{equation*}
+		
+		\bigskip 
+		\pause
+		
+		\emph{Nebenrechnung:} Zeige die Wirkung des Fixpunktkombinators.
+		\pause
+		\begin{align*}
+			\num{Y} \num{F}
+			= \enskip &\Bigl( \lambda z . \ \bigl( \lambda u . z (uu) \bigr) \ \bigl( \lambda u. z (uu) \bigr) \Bigr) \ \num{F} \\
+			\Rightarrow^{\beta} \quad &\Bigl( \lambda u . \num{F} (uu) \Bigr) \ \Bigl( \lambda u. \num{F} (uu) \Bigr) \qquad =: \num{Y_F} \\
+			\Rightarrow^{\beta} \quad &\num{F} \num{Y_F}
+		\end{align*}
+	\end{frame}
+
+	\begin{frame} \frametitle{Aufgabe 1 -- Teil (b)}
+	\small
+		\begin{align*}
+			\num{Y} \num{F} \num{2} \num{1} &\Rightarrow^\ast \num{F} \num{Y_F} \num{2} \num{1} \\
+			&\Rightarrow^\ast \num{ite} \ 
+			(\underbrace{\num{iszero} \ \num{1}}_{\Rightarrow^\ast \num{false}}) \ \num{1} \ \Bigl( \num{mult} \ \num{2} \ \bigl( \num{Y_F} \ \num{2} \ (\underbrace{\num{pred} \ \num{1}}_{\Rightarrow^\ast \num{0})} \bigr) \Bigr) \\
+			&\Rightarrow^\ast \num{mult} \ \num{2} \ \Bigl( \num{Y_F} \ \num{2} \ \num{0} \Bigr) \\
+			&\Rightarrow^\ast \num{mult} \ \num{2} \ \Bigl( \num{F} \num{Y_F} \ \num{2} \ \num{0} \Bigr) \\
+			&\Rightarrow^\ast \num{mult} \ \num{2} \ \biggl( \num{ite} \ \Bigl( \underbrace{\num{iszero} \ \num{0}}_{\Rightarrow^\ast \num{true}} \Bigr) \ \num{1} \ \Bigl( \dots \Bigr) \biggr) \\
+			&\Rightarrow^\ast \num{mult} \ \num{2} \ \num{1} \\
+			&\Rightarrow^\ast \num{2}
+		\end{align*}
+	\end{frame}
+	
+	\begin{frame} \frametitle{Aufgabe 2 -- Teil (a)}
+	\small
+		\begin{equation*}
+			g \colon \mathbb{N} \times \mathbb{N} \to \mathbb{N} \quad \text{ mit } \quad g(x,y) := \begin{cases}
+			x * x & \text{für } y=0 \\
+			g(2*x,y-1) & \text{für } y \ge 1 
+			\end{cases}
+		\end{equation*}
+		
+		\medskip
+		\pause
+		
+		\begin{alignat*}{3}
+			\num{G} = \enskip & \Biggl( \lambda g xy \ . \ \biggl( &&\num{ite} \ && \Bigl( \num{iszero} \ y \Bigr) \\
+			&&&&& \Bigl( \num{mult} \ x \ x \ \Bigr) \\
+			&&&&& \Bigl( g \ \bigl( \num{mult} \ \num{2} \ x \bigr) \ \bigl( \num{pred} \ y \bigr) \Bigr) \\
+			&&& \biggr) \\
+			& \Biggr)
+		\end{alignat*}
+	\end{frame}
+
+	\begin{frame} \frametitle{Aufgabe 2 -- Teil (b)}
+	\small
+		\begin{equation*}
+		\num{G} = \Biggl( \lambda \ g xy \ . \ \num{ite} \ \Bigl(\num{iszero} \ y \Bigr) \ \Bigl( \num{mult} \ x \ x \Bigr) \ \Bigl( g \ \bigl( \num{mult} \ \num{2} \ x \bigr) \ \bigl(\num{pred} \ y) \bigr) \Bigr) \Biggr)
+		\end{equation*}
+		
+		\bigskip 
+		\pause
+		
+		\emph{Nebenrechnung:} Zeige die Wirkung des Fixpunktkombinators.
+		\pause
+		\begin{align*}
+		\num{Y} \num{G}
+		= \enskip &\Bigl( \lambda z . \ \bigl( \lambda u . z (uu) \bigr) \ \bigl( \lambda u. z (uu) \bigr) \Bigr) \ \num{G} \\
+		\Rightarrow^{\beta} \quad &\Bigl( \lambda u . \num{G} (uu) \Bigr) \ \Bigl( \lambda u. \num{G} (uu) \Bigr) \qquad =: \num{Y_G} \\
+		\Rightarrow^{\beta} \quad &\num{G} \num{Y_G}
+		\end{align*}
+	\end{frame}
+
+%	\begin{frame} \frametitle{Aufgabe " -- Teil (b)}
+%		\begin{align*}
+%		\num{Y} \num{G} \num{1} \num{3} &\Rightarrow^\ast \num{G} \num{Y_G} \num{1} \num{3} \\
+%		&\Rightarrow^\ast 
+%		\num{ite} \ 
+%		\Bigl( \underbrace{\num{iszero} \ \num{3}}_{\Rightarrow^\ast \num{false}} \Bigr) \ \Bigl( \dots \Bigr) \ \Bigl( \num{Y_G} \ \bigl( \underbrace{\num{mult} \ \num{2} \ \num{1}}_{\Rightarrow^\ast \num{2}} \bigr) \ \bigl(\underbrace{\num{pred} \ \num{3}}_{\Rightarrow^\ast \num{2}} \bigr) \\
+%		&\Rightarrow^\ast 
+%		\num{G} \ \num{Y_G} \ \num{2} \ \num{2} \\
+%		%
+%		&\Rightarrow^\ast 
+%		\num{ite} \ 
+%		\Bigl( \underbrace{\num{iszero} \ \num{2}}_{\Rightarrow^\ast \num{false}} \Bigr) \ \Bigl( \dots \Bigr) \ \Bigl( \num{Y_G} \ \bigl( \underbrace{\num{mult} \ \num{2} \ \num{2}}_{\Rightarrow^\ast \num{4}} \bigr) \ \bigl(\underbrace{\num{pred} \ \num{2}}_{\Rightarrow^\ast \num{1}} \bigr) \Bigr) \\
+%		&\Rightarrow^\ast 
+%		\num{G} \ \num{Y_G} \ \num{4} \ \num{1} \\
+%		%
+%		&\Rightarrow^\ast 
+%		\num{ite} \ 
+%		\Bigl( \underbrace{\num{iszero} \ \num{1}}_{\Rightarrow^\ast \num{false}} \Bigr) \ \Bigl( \dots \Bigr) \ \Bigl( \num{Y_G} \ \bigl( \underbrace{\num{mult} \ \num{2} \ \num{4}}_{\Rightarrow^\ast \num{8}} \bigr) \ \bigl(\underbrace{\num{pred} \ \num{1}}_{\Rightarrow^\ast \num{0}} \bigr) \Bigr) \\
+%		&\Rightarrow^\ast
+%		\num{G} \ \num{Y_G} \ \num{8} \ \num{0} \\
+%		%
+%		&\Rightarrow^\ast
+%		\num{ite} \ 
+%		\Bigl( \underbrace{\num{iszero} \ \num{0}}_{\Rightarrow^\ast \num{true}} \Bigr) \ \Bigl( \underbrace{\num{mult} \ \num{8} \ \num{8}}_{\Rightarrow^\ast \num{64}} \Bigr) \ \Bigl( \dots \Bigr) \\
+%		%
+%		&\Rightarrow^\ast \num{64}
+%		\end{align*}
+%	\end{frame}
+
+	\begin{frame} \frametitle{Aufgabe 2 -- Teil (b)}
+	\small
+		\begin{alignat*}{2}
+		&\num{Y} \num{G} \num{1} \num{3} \\
+		\Rightarrow^\ast &\num{G} \num{Y_G} \num{1} \num{3} \\
+		\Rightarrow^\ast 
+		&\num{ite} \ 
+		\Bigl( \underbrace{\num{iszero} \ \num{3}}_{\Rightarrow^\ast \num{false}} \Bigr) \ \Bigl( \dots \Bigr) \ \Bigl( \num{Y_G} \ \bigl( \underbrace{\num{mult} \ \num{2} \ \num{1}}_{\Rightarrow^\ast \num{2}} \bigr) \ \bigl(\underbrace{\num{pred} \ \num{3}}_{\Rightarrow^\ast \num{2}} \bigr) 
+		&&\Rightarrow^\ast 
+		\num{G} \ \num{Y_G} \ \num{2} \ \num{2} \\
+		%
+		\Rightarrow^\ast 
+		&\num{ite} \ 
+		\Bigl( \underbrace{\num{iszero} \ \num{2}}_{\Rightarrow^\ast \num{false}} \Bigr) \ \Bigl( \dots \Bigr) \ \Bigl( \num{Y_G} \ \bigl( \underbrace{\num{mult} \ \num{2} \ \num{2}}_{\Rightarrow^\ast \num{4}} \bigr) \ \bigl(\underbrace{\num{pred} \ \num{2}}_{\Rightarrow^\ast \num{1}} \bigr) \Bigr)
+		&&\Rightarrow^\ast 
+		\num{G} \ \num{Y_G} \ \num{4} \ \num{1} \\
+		%
+		\Rightarrow^\ast 
+		&\num{ite} \ 
+		\Bigl( \underbrace{\num{iszero} \ \num{1}}_{\Rightarrow^\ast \num{false}} \Bigr) \ \Bigl( \dots \Bigr) \ \Bigl( \num{Y_G} \ \bigl( \underbrace{\num{mult} \ \num{2} \ \num{4}}_{\Rightarrow^\ast \num{8}} \bigr) \ \bigl(\underbrace{\num{pred} \ \num{1}}_{\Rightarrow^\ast \num{0}} \bigr) \Bigr)
+		&&\Rightarrow^\ast
+		\num{G} \ \num{Y_G} \ \num{8} \ \num{0} \\
+		%
+		\Rightarrow^\ast
+		&\num{ite} \ 
+		\Bigl( \underbrace{\num{iszero} \ \num{0}}_{\Rightarrow^\ast \num{true}} \Bigr) \ \Bigl( \underbrace{\num{mult} \ \num{8} \ \num{8}}_{\Rightarrow^\ast \num{64}} \Bigr) \ \Bigl( \dots \Bigr)
+		%
+		&&\Rightarrow^\ast \num{64}
+		\end{alignat*}
+	\end{frame}	
+
+	\begin{frame} \frametitle{Einführung in Prolog}
+	\small
+		\begin{itemize}
+			\item Französisch: programmation en logique
+			(deutsch: Programmieren in Logik)
+			\item \emph{Online-Editor \& Interpreter.} \url{swish.swi-prolog.org}
+			\item Prolog-Programme bestehen aus \emph{Fakten} und \emph{Regeln}.
+			\bigskip
+			\item Statements werden mit \emph{\texttt{.}} abgeschlossen.
+			\item Variablen beginnen mit Großbuchstaben.
+			\bigskip
+			\item \emph{UND}-Operator. \hspace{.2cm} \texttt{,}
+			\item \emph{ODER}-Operator.\hspace{.2cm} \texttt{;}
+		\end{itemize}
+	\end{frame}
+
+	\begin{frame} \frametitle{Prolog: Fakten, Regeln und Anfragen}
+	\small
+		\begin{minipage}{\dimexpr0.48\linewidth-\fboxrule-\fboxsep}
+		\uncover<1-3>{%
+		\begin{minipage}{\dimexpr\linewidth-\fboxrule-\fboxsep}
+			\begin{doodle}{cdorange}
+				\emph{Fakten.}
+				\begin{itemize}
+					\item Prädikat mit Argumenten
+					\item z.B. Albert ist männlich \\
+					$\hookrightarrow$ \texttt{male(albert).}
+				\end{itemize} 
+			\end{doodle}
+		\end{minipage}%
+		} \\
+		\uncover<3-3>{%
+		\begin{minipage}{\dimexpr\linewidth-\fboxrule-\fboxsep}
+			\begin{doodle}{cdorange}
+				\emph{Anfragen.}  
+				\begin{itemize}
+					\item Ist Albert männlich? \\
+					$\hookrightarrow$ \texttt{?- male(albert).}
+					\item Nutzung von Variablen liefert I/O
+					\item Anzeigen mehrerer Lösung mit \texttt{swipl} durch \texttt{;}
+				\end{itemize}
+			\end{doodle}
+		\end{minipage}%
+		}
+		\end{minipage}
+		\hfill
+		\uncover<2-3>{%
+		\begin{minipage}{\dimexpr0.48\linewidth-\fboxrule-\fboxsep}
+			\begin{doodle}{cdorange}
+				\emph{Regeln.}  
+				\begin{itemize}
+					\item Abhängigkeit eines Fakts von einem oder mehreren anderen Fakten
+					\item z.B. Vater ist männliches Elternteil \\
+					$\hookrightarrow$ \texttt{father(X,Y) :- parent(X,Y), male(X).} 
+					\item \texttt{:-} kann als umgedrehte Implikation gelesen werden
+				\end{itemize}
+			\end{doodle}
+		\end{minipage}%
+		}
+	\end{frame}
+
+	\begin{frame} \frametitle{Aufgabe 3}
+		\begin{minipage}{\dimexpr0.5\linewidth-\fboxrule-\fboxsep}
+%			\usetikzlibrary{positioning,automata}
+%			\begin{tikzpicture}[shorten >=1pt,node distance=1.5cm, semithick, on grid]
+%			  \node[state]   (q_1)                {$1$};
+%			  \node[state]   (q_2) [below=of q_1] {$2$};
+%			  \node[state]   (q_3) [right=of q_2] {$3$};
+%			  \node[state]   (q_4) [right=of q_1] {$4$};
+%			  \path[->] (q_1) edge                node [above] {} (q_2)
+%			  			(q_3) edge                node [above] {} (q_2)
+%			  			(q_1) edge                node [above] {} (q_4)
+%			  			(q_4) edge                node [above] {} (q_3)
+%			            (q_1) edge [loop left]    node [above] {} (q_1);
+%			\end{tikzpicture}
+			
+			\begin{ttfamily}
+				\begin{tabbing}
+					1 \quad \= edge(1,1). \\
+					2 \> edge(1,4). \\
+					3 \> edge(1,2). \\
+					4 \> edge(3,2). \\
+					5 \> edge(4,3). \\[9pt] \pause
+					6 \> path(U,U). \\
+					7 \> path(U,W) :- edge(U,V), path(V, W).
+				\end{tabbing}
+			\end{ttfamily}	
+		\end{minipage}
+	\pause
+		\begin{minipage}{\dimexpr0.5\linewidth-\fboxrule-\fboxsep}
+			\begin{alignat*}{2}
+			&\texttt{?- path(4,X)} \\
+			\texttt{\{X=4\}} \quad &\texttt{?- .} && \texttt{\% 6 } \\[12pt]
+			%
+			&\texttt{?- path(4,X)}  \\
+			&\texttt{?- edge(4,W), path(W,X).} \quad && \texttt{\% 7} \\
+			\texttt{\{W=3\}} \quad &\texttt{?- path(3,X).} && \texttt{\% 5} \\
+			\texttt{\{X=3\}} \quad &\texttt{?- .} && \texttt{\% 6}\\[12pt]
+			%
+			&\texttt{?- path(4,X)}  \\
+			&\texttt{?- edge(4,W), path(W,X).} \quad && \texttt{\% 7} \\
+			\texttt{\{W=3\}} \quad &\texttt{?- path(3,X).} && \texttt{\% 5} \\
+			&\texttt{?- edge(3,U), path(U,X).} &&\texttt{\% 7} \\
+			\texttt{\{U=2\}} \quad &\texttt{?- path(2,X).} &&\texttt{\% 4} \\
+			\texttt{\{X=2\}} \quad &\texttt{?- .} &&\texttt{\% 6} \\
+			\end{alignat*}
+		\end{minipage}
+	\end{frame}
+\end{document}

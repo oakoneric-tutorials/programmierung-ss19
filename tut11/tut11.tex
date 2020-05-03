@@ -1,0 +1,337 @@
+\documentclass[aspectratio=1610,onlymath, ngerman]{beamer}
+% \documentclass[aspectratio=1610,onlymath,handout]{beamer}
+\input{../beamer_settings}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\defineTitle{11}{$C_1$ und $AM_1$}{28.~Juni~2019}
+
+\usepackage[inline]{enumitem}
+
+\renewcommand{\emph}[1]{\textbf{#1}}
+\newcommand{\coloremph}[1]{\textcolor{cdpurple}{#1}}
+\newcommand{\col}[1]{\textcolor{cdpurple}{\boldsymbol{#1}}}
+\newcommand{\coll}[1]{\textcolor{cddarkgreen}{\boldsymbol{#1}}}
+\newcommand{\colll}[1]{\textcolor{cdorange}{\boldsymbol{#1}}}
+
+\DeclareMathSymbol{*}{\mathbin}{symbols}{"01}
+
+\renewcommand*{\headerinfo}{\color{cdgray}\textbf{Github:} \url{https://github.com/oakoneric/programmierung-ss19}}
+\arraycolsep2pt
+
+\usepackage{aligned-overset}
+\usepackage{array}
+\chardef\_=`_
+
+\renewcommand{\epsilon}{\varepsilon}
+\newcommand{\labelitemi}{$\blacktriangleright$}
+\newcommand{\labelitemii}{$\vartriangleright$}
+\usepackage{tabu}
+\newcommand*\head{\rowfont{\bfseries}}
+\newcommand*{\tw}{\rowfont{\ttfamily}}
+
+\begin{document}
+    \maketitle
+    
+    \begin{frame} \frametitle{$C_1$ und $AM_1$}
+    \small
+    	\begin{itemize}
+    		\item \emph{bisher:} Implementierung von $C_0$ mit $AM_0$
+    		\item \emph{jetzt:} Erweiterung auf $C_1$ mit $AM_1$ \pause
+    			\begin{itemize}
+    				\item Erweiterung um Funktionen ohne Rückgabewert
+    				\item Einschränkungen von $C_0$ bleiben erhalten
+    			\end{itemize}
+    		\pause
+    		\item \emph{Implementierung} durch
+    			\begin{itemize}
+    				\item Syntax von $C_1$
+    				\item Befehle und Semantik einer abstrakten Maschine $AM_1$
+    				\item Übersetzer $C_1 \leftrightarrow AM_1$
+    			\end{itemize}
+    	\end{itemize}
+    \end{frame}
+
+	\begin{frame} \frametitle{Befehlssemantik der $AM_1$}
+	\small
+		\begin{minipage}{\dimexpr0.5\linewidth-\fboxrule-\fboxsep}
+			$b \in \{ \text{global}, \text{lokal}\}$ \\
+			$r$ \dots aktueller REF
+		\end{minipage}
+		\begin{minipage}{\dimexpr0.5\linewidth-\fboxrule-\fboxsep}
+			\begin{equation*}
+				adr(r,b,o) = \begin{cases}
+				r+o & \text{wenn } b = \text{lokal} \\
+				o & \text{wenn } b = \text{global}
+				\end{cases}
+			\end{equation*}
+		\end{minipage}
+		
+		\smallskip
+		
+		\begin{tabular}{p{2cm} p{\dimexpr\linewidth-\fboxrule-\fboxsep-2cm}}
+			\emph{Befehl} & \emph{Auswirkungen}  \\ \hline
+			LOAD($b$,$o$) & Lädt den Inhalt von Adresse $adr(r,b,o)$ auf den Datenkeller, inkrementiere Befehlszähler \\
+			STORE($b$,$o$) & Speichere oberstes Datenkellerelement an $adr(r,b,o)$, inkrementiere Befehlszähler \\
+			WRITE($b$,$o$) & Schreibe Inhalt an Adresse $adr(r,b,o)$ auf das
+			Ausgabeband, inkrementiere Befehlszähler \\
+			READ($b$,$o$) & Lies oberstes Element vom Eingabeband, speichere
+			an Adresse $adr(r,b,o)$, inkrementiere Befehlszähler \\
+		\end{tabular}
+	\end{frame}
+
+	\begin{frame} \frametitle{Befehlssemantik der $AM_1$}
+%	\small		
+		\begin{tabular}{p{2cm} p{\dimexpr\linewidth-\fboxrule-\fboxsep-2cm}}
+			\emph{Befehl} & \emph{Auswirkungen}  \\ \hline
+			LOADI($o$) & Ermittle Wert ($=b$) an Adresse $r+o$, Lade Inhalt
+			von Adresse $b$ auf Datenkeller, inkrementiere Befehlszähler \\
+			STOREI($o$) & Ermittle Wert ($=b$) an Adresse $r+o$, nimm
+			oberstes Datenkellerelement, speichere dieses an
+			Adresse $b$, inkrementiere Befehlszähler \\
+			WRITEI($o$) & Ermittle Wert ($=b$) an Adresse $r+o$, schreibe den
+			Inhalt an Adresse $b$ auf Ausgabeband, inkrementiere Befehlszähler \\
+			READI($o$) & Ermittle Wert ($=b$) an Adresse $r+o$, lies das oberste
+			Element vom Eingabeband, speichere es an Adresse $b$ , inkrementiere Befehlszähler \\
+			LOADA($b$,$o$) & Lege $adr(r,b,o)$ auf Datenkeller, inkrementiere Befehlszähler \\			
+			PUSH & oberstes Element vom Datenkeller auf Laufzeitkeller, Befehlszähler inkrementieren \\
+			CALL $adr$ & Befehlszählerwert inkrementieren und auf LZK legen, Befehlszähler auf $adr$ setzen, REF auf LZK legen, REF auf Länge des LZK ändern \\
+			INIT $n$ & $n$-mal $0$ auf den Laufzeitkeller legen \\
+			RET $n$ & im LZK alles nach REF-Zeiger löschen, oberstes Element des LZK als REF setzen, oberstes Element des LZK als Befehlszähler setzen, $n$ Elemente von LZK löschen
+		\end{tabular}
+	\end{frame}
+
+
+	\begin{frame} \frametitle{Aufgabe 1 -- Teil (a)}
+	\small
+	
+	\begin{ttfamily}
+		\emph{while} (*p > i) \{ f(p); i = i + 1; \} \\
+		p = \&i;
+	\end{ttfamily}
+
+	\begin{equation*}
+		tab_{g+\text{lDecl}} = \{ \texttt{f}/(\text{proc}, 1), \texttt{g}/(\text{proc}, 2), \texttt{i}/(\text{var}, \text{lokal}, 1), \texttt{p}/(\text{var-ref}, -2) \}
+	\end{equation*}
+	
+	\bigskip 
+	\pause
+	\emph{Lösung.}
+	
+	\medskip 
+	
+	\begin{tabular}{>{\ttfamily}r >{\ttfamily}l >{\ttfamily}l >{\ttfamily}l >{\ttfamily}l >{\ttfamily}l}
+		2.2.1 & LOADI(-2) ;  LOAD(lokal,1) ;  GT ;  JMC 2.2.2 ; \\
+		& LOAD(lokal,-2)  ;  PUSH          ;  CALL 1 ; \\
+		& LOAD(lokal,1)   ;  LIT 1         ; ADD ; STORE(lokal,1) ; JMP 2.2.1 ; \medskip \\
+		2.2.2 & LOADA(lokal,1) ; STORE(lokal,-2) ; \\
+	\end{tabular}
+
+		\begin{minipage}{\dimexpr0.5\linewidth-\fboxrule-\fboxsep}
+		\end{minipage}
+
+	\end{frame}
+
+	\begin{frame} \frametitle{Aufgabe 1 -- Teil (b)}
+	\small
+	
+		Gegeben ist folgender $AM_1$-Code: \\
+		\bigskip 
+		
+		\begin{minipage}{\dimexpr0.33\linewidth-\fboxrule-\fboxsep}
+			\begin{ttfamily}
+				\begin{enumerate}[label=\arabic*:, nolistsep]
+					\item INIT 1;
+					\item CALL 18;
+					\item INIT 0;
+					\item LOAD(lokal , -2);
+					\item LIT 0;
+					\item GT;
+					\item JMC 17;
+					\item LIT 2;
+					\item LOADI ( -3);
+				\end{enumerate}
+			\end{ttfamily}
+		\end{minipage}
+		\begin{minipage}{\dimexpr0.33\linewidth-\fboxrule-\fboxsep}
+			\begin{ttfamily}
+				\begin{enumerate}[label=\arabic*:, nolistsep]
+					\setcounter{enumi}{9}
+					\item MUL;
+					\item STOREI ( -3);
+					\item LOAD(lokal , -2);
+					\item LIT 1;
+					\item SUB;
+					\item STORE(lokal , -2);
+					\item JMP 4;
+					\item RET 2;
+					\item INIT 0;
+				\end{enumerate}
+			\end{ttfamily}
+		\end{minipage}
+		\begin{minipage}{\dimexpr0.33\linewidth-\fboxrule-\fboxsep}
+			\begin{ttfamily}
+				\begin{enumerate}[label=\arabic*:, nolistsep]
+					\setcounter{enumi}{18}
+					\item READ(global ,1);
+					\item LOADA(global ,1);
+					\item PUSH;
+					\item LOAD(global ,1);
+					\item PUSH;
+					\item CALL 3;
+					\item WRITE(global ,1);
+					\item JMP 0;
+
+				\end{enumerate}
+			\end{ttfamily}
+		\end{minipage}
+	
+		\bigskip
+		
+		Führen Sie $11$ Schritte der $AM_1$ auf der Konfiguration $\sigma = (22, \epsilon, 1:3:0:1, 3, \epsilon, \epsilon)$ aus.
+	\end{frame}
+    
+    \begin{frame} \frametitle{Aufgabe 1 -- Teil (b)}
+    \footnotesize
+    	
+    	\begin{center}
+    		\begin{tabu}{rccrclcccrcrl}
+    			\head & BZ && DK && LZK && REF && Inp && Out & \\ \hline 
+    			( & 22 &,& $\epsilon$ &,& 1:3:0:1 &,& 3 &,& $\epsilon$ &,& $\epsilon$ & ) \\
+    			( & 23 &,& 1 &,& 1:3:0:1 &,& 3 &,& $\epsilon$ &,& $\epsilon$ & ) \\
+    			( & 24 &,& $\epsilon$ &,& 1:3:0:1:1 &,& 3 &,& $\epsilon$ &,& $\epsilon$ & ) \\
+    			( & 3 &,& $\epsilon$ &,& 1:3:0:1:1:25:3 &,& 7 &,& $\epsilon$ &,& $\epsilon$ & ) \\
+    			( & 4 &,& $\epsilon$ &,& 1:3:0:1:1:25:3 &,& 7 &,& $\epsilon$ &,& $\epsilon$ & ) \\
+    			( & 5 &,& 1 &,& 1:3:0:1:1:25:3 &,& 7 &,& $\epsilon$ &,& $\epsilon$ & ) \\
+    			( & 6 &,& 0:1 &,& 1:3:0:1:1:25:3 &,& 7 &,& $\epsilon$ &,& $\epsilon$ & ) \\
+    			( & 7 &,& 1 &,& 1:3:0:1:1:25:3 &,& 7 &,& $\epsilon$ &,& $\epsilon$ & ) \\
+    			( & 8 &,& $\epsilon$ &,& 1:3:0:1:1:25:3 &,& 7 &,& $\epsilon$ &,& $\epsilon$ & ) \\
+    			( & 9 &,& 2 &,& 1:3:0:1:1:25:3 &,& 7 &,& $\epsilon$ &,& $\epsilon$ & ) \\
+    			( & 10 &,& 1:2 &,& 1:3:0:1:1:25:3 &,& 7 &,& $\epsilon$ &,& $\epsilon$ & ) \\
+    			( & 11 &,& 2 &,& 1:3:0:1:1:25:3 &,& 7 &,& $\epsilon$ &,& $\epsilon$ & ) \\
+    			( & 12 &,& $\epsilon$ &,& 2:3:0:1:1:25:3 &,& 7 &,& $\epsilon$ &,& $\epsilon$ & ) \\
+    			( & 13 &,& 1 &,& 2:3:0:1:1:25:3 &,& 7 &,& $\epsilon$ &,& $\epsilon$ & ) \\
+    			( & 14 &,& 1:1 &,& 2:3:0:1:1:25:3 &,& 7 &,& $\epsilon$ &,& $\epsilon$ & ) \\
+    		\end{tabu}
+    	\end{center}
+    \end{frame}
+
+	\begin{frame} \frametitle{Aufgabe 2}
+	\small
+		\begin{ttfamily}
+			\emph{\#} \!\!\!\!\!\! \emph{include} <stdio.h> \\ 
+			\emph{int} x, y; \\ \medskip
+			\emph{void} f(...) {...} \\ \medskip
+			\emph{void} g(\emph{int} a, \emph{int} *b) \{ \\
+			$\quad$	\emph{int} c; \\
+			$\quad$	c = 3; \\
+			$\quad$	\emph{if} (c == *b) \emph{while} (a > 0) f(\&a, b); \\
+			\} \\ \medskip
+			\emph{void} main () \{ ... \} \\
+		\end{ttfamily}
+	\end{frame}
+
+	\begin{frame} \frametitle{Aufgabe 2}
+	\small 
+		
+		\begin{equation*}
+			\begin{aligned}
+			lokal-tab_{\texttt{g}} = [&\text{f/(proc,1) , g/(proc,2) , x/(var,global,1) , y/(var,global,2) ,} \\
+				&\text{a/(var,lokal,--3) , b/(var-ref,--2) , c/(var,lokal,1)}]
+			\end{aligned}
+		\end{equation*}
+		
+		\bigskip 
+		\pause
+		\emph{Lösung.}
+		
+		\medskip 
+		
+		\begin{tabu}{rl}
+			\tw &LIT 3 ; STORE(lokal,1); \\
+			\tw &LOAD(lokal,1) ; LOADI(-2) ; EQ ; JMC 2.2.1 ; \\
+			\tw 2.2.2.1: & LOAD(lokal,-3) ; LIT 0 ; GT ; JMC 2.2.2.2 ; \\
+			\tw & LOADA(lokal,-3) ; PUSH ; LOAD(lokal,-2) ; PUSH ; CALL 1 ; \\
+			\tw & JMP 2.2.2.1 \\
+			\tw 2.2.2.2: & 2.2.1:
+		\end{tabu}
+	\end{frame}
+	
+	\begin{frame} \frametitle{Aufgabe 3}
+	\small
+		Gegeben ist folgender $AM_1$-Code: \\
+		\bigskip 
+		
+		\begin{minipage}{\dimexpr0.33\linewidth-\fboxrule-\fboxsep}
+			\begin{ttfamily}
+				\begin{enumerate}[label=\arabic*:, nolistsep]
+					\item INIT 1;
+					\item CALL 1§;
+					\item INIT 0;
+					\item LOADI(-2);
+					\item LIT 2;
+					\item GT;
+					\item JMC 12;
+				\end{enumerate}
+			\end{ttfamily}
+		\end{minipage}
+		\begin{minipage}{\dimexpr0.33\linewidth-\fboxrule-\fboxsep}
+			\begin{ttfamily}
+				\begin{enumerate}[label=\arabic*:, nolistsep]
+					\setcounter{enumi}{7}
+					\item LOADI(-2);
+					\item LIT 2;
+					\item DIV;
+					\item STOREI(-2);
+					\item RET 1;
+					\item INIT 0;
+					\item READ(global, 1);
+				\end{enumerate}
+			\end{ttfamily}
+		\end{minipage}
+		\begin{minipage}{\dimexpr0.33\linewidth-\fboxrule-\fboxsep}
+			\begin{ttfamily}
+				\begin{enumerate}[label=\arabic*:, nolistsep]
+					\setcounter{enumi}{14}
+					\item LOADA(global ,1);
+					\item PUSH;
+					\item CALL 3;
+					\item WRITE(global ,1);
+					\item JMP 0;
+
+				\end{enumerate}
+			\end{ttfamily}
+		\end{minipage}
+		
+		\bigskip
+		
+		Gesucht ist das Ablaufprotokoll der $AM_1$ mit der Anfangskonfiguration $\sigma = (14, \epsilon, 0:0:1, 3, 4, \epsilon)$.
+	\end{frame}
+
+	\begin{frame} \frametitle{Aufgabe 3}
+	\footnotesize
+		\vspace{-6pt}
+		\begin{center}
+			\begin{tabu}{rrcrclcccrcrl}
+				\head & BZ && DK && LZK && REF && Inp && Out & \\ \hline
+				( & 14 &,& $\epsilon$ &,& 0:0:1 &,& 3 &,& 4 &,& $\epsilon$ & ) \\
+				( & 15 &,& $\epsilon$ &,& 4:0:1 &,& 3 &,& $\epsilon$ &,& $\epsilon$ & ) \\
+				( & 16 &,& 1 &,& 4:0:1 &,& 3 &,& $\epsilon$ &,& $\epsilon$ & ) \\
+				( & 17 &,& $\epsilon$ &,& 4:0:1:1 &,& 3 &,& $\epsilon$ &,& $\epsilon$ & ) \\
+				( & 3 &,& $\epsilon$ &,& 4:0:1:1:18:3 &,& 6 &,& $\epsilon$ &,& $\epsilon$ & ) \\
+				( & 4 &,& $\epsilon$ &,& 4:0:1:1:18:3 &,& 6 &,& $\epsilon$ &,& $\epsilon$ & ) \\
+				( & 5 &,& 4 &,& 4:0:1:1:18:3 &,& 6 &,& $\epsilon$ &,& $\epsilon$ & ) \\
+				( & 6 &,& 2:4 &,& 4:0:1:1:18:3 &,& 6 &,& $\epsilon$ &,& $\epsilon$ & ) \\
+				( & 7 &,& 1 &,& 4:0:1:1:18:3 &,& 6 &,& $\epsilon$ &,& $\epsilon$ & ) \\
+				( & 8 &,& $\epsilon$ &,& 4:0:1:1:18:3 &,& 6 &,& $\epsilon$ &,& $\epsilon$ & ) \\
+				( & 9 &,& 4 &,& 4:0:1:1:18:3 &,& 6 &,& $\epsilon$ &,& $\epsilon$ & ) \\
+				( & 10 &,& 2:4 &,& 4:0:1:1:18:3 &,& 6 &,& $\epsilon$ &,& $\epsilon$ & ) \\
+				( & 11 &,& 2 &,& 4:0:1:1:18:3 &,& 6 &,& $\epsilon$ &,& $\epsilon$ & ) \\
+				( & 12 &,& $\epsilon$ &,& 2:0:1:1:18:3 &,& 6 &,& $\epsilon$ &,& $\epsilon$ & ) \\
+				( & 18 &,& $\epsilon$ &,& 2:0:1 &,& 3 &,& $\epsilon$ &,& $\epsilon$ & ) \\
+				( & 19 &,& $\epsilon$ &,& 2:0:1 &,& 3 &,& $\epsilon$ &,& 2 & ) \\
+			\end{tabu}
+		\end{center}
+	\end{frame}
+\end{document}

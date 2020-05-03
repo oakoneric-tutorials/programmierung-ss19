@@ -1,0 +1,294 @@
+\documentclass[aspectratio=1610,onlymath, ngerman]{beamer}
+% \documentclass[aspectratio=1610,onlymath,handout]{beamer}
+\input{../beamer_settings}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\defineTitle{5}{Unifikation \& Induktion auf Listen}{\today}
+
+\renewcommand{\emph}[1]{\textbf{#1}}
+\newcommand{\coloremph}[1]{\textcolor{cdpurple}{#1}}
+\newcommand{\col}[1]{\textcolor{cdpurple}{\boldsymbol{#1}}}
+
+\DeclareMathSymbol{*}{\mathbin}{symbols}{"01}
+
+\renewcommand*{\headerinfo}{\color{cdgray}\textbf{Github:} \url{https://github.com/oakoneric/programmierung-ss19}}
+\arraycolsep2pt
+
+\usepackage{aligned-overset}
+\newcommand{\cw}[1]{\texttt{#1}}
+\newcommand{\step}[2][]{\ensuremath{\overset{{#1} (\text{#2})}{=}}}
+\newcommand*{\astep}[2][]{\ensuremath{\overset{{#1} (\text{#2})}&{=}}}
+
+\begin{document}
+    \maketitle
+
+
+	\begin{frame}\frametitle{Unifikationsalgorithmus -- Regeln}
+	\small
+		\begin{itemize}
+			\item \emph{Dekomposition.} Sei $\delta \in \Sigma$ ein $k$-stelliger Konstruktor, $s_1 , \dots , s_k , t_1 , \dots , t_k$ Terme über Konstruktoren und Variablen.
+			\begin{equation*}
+				\begin{pmatrix}
+				\delta(s_1, \dots , s_k) \\ \delta(t_1, \dots , t_k)
+				\end{pmatrix}
+				\quad \leadsto \quad
+				\begin{pmatrix} s_1 \\ t_1 \end{pmatrix} , \dots , \begin{pmatrix} s_k \\ t_k \end{pmatrix}
+			\end{equation*}
+			\item \emph{Elimination.} Sei $x$ eine Variable \coloremph{!}
+			\begin{equation*}
+				\begin{pmatrix} x \\ x \end{pmatrix}
+				\quad \leadsto \quad
+				\emptyset
+			\end{equation*}
+			\item \emph{Vertauschung.} Sei $t$ keine Variable.
+			\begin{equation*}
+				\begin{pmatrix} t \\ x \end{pmatrix}
+				\quad \leadsto \quad 
+				\begin{pmatrix} x \\ t \end{pmatrix}
+			\end{equation*}
+			\item \emph{Substitution.} Sei $x$ eine Variable, $t$ keine Variable und $x$ kommt nicht in $t$ vor (occur check). Dann ersetze in jedem anderen Term die Variable $x$ durch $t$.
+		\end{itemize}
+	\end{frame}
+
+	\begin{frame}\frametitle{Aufgabe 1}
+		\begin{minipage}{\dimexpr0.5\linewidth-\fboxrule-\fboxsep}
+		\begin{align*}
+			&\left\{\left(\begin{array}{lcrlcl}
+				\col{\delta(} \alpha \col{,} & \sigma(x_1 , \alpha) \col{,} & \sigma(x_2,x_3) \col{)} \\
+				\col{\delta(} \alpha \col{,} & \sigma(x_1, x_2)     \col{,} & \sigma(x_2,\gamma(x_2)\col{)}
+				\end{array}\right)\right\}\\
+			%
+			\overset{\text{Dek.}}{\Longrightarrow}
+			%
+			&\left\{ \begin{pmatrix}
+			\col{\alpha} \\ \col{\alpha}
+			\end{pmatrix}, \begin{pmatrix}
+			\col{\sigma(} x_1 \col{,} \alpha \col{)} \\ \col{\sigma}(x_1 \col{,} x_2 \col{)}
+			\end{pmatrix}, \begin{pmatrix}
+			\col{\sigma(} x_2 \col{,} x_3 \col{)} \\ \col{\sigma(} x_2 \col{,} \gamma(x_2) \col{)}
+			\end{pmatrix}
+			\right\}\\
+			%
+			\overset{\text{Dek.}}{\Longrightarrow^3}
+			%
+			&\left\{ \begin{pmatrix}
+			\col{x_1} \\ \col{x_1}
+			\end{pmatrix}, \begin{pmatrix}
+			\alpha \\ x_2
+			\end{pmatrix}, \begin{pmatrix}
+			\col{x_2} \\ \col{x_2}
+			\end{pmatrix}, \begin{pmatrix}
+			x_3 \\ \gamma(x_2)
+			\end{pmatrix}
+			\right\}\\
+			%
+			\overset{\text{El.}}{\Longrightarrow^2}
+			%
+			&\left\{ \begin{pmatrix}
+			\col{\alpha} \\ \col{x_2}
+			\end{pmatrix}, \begin{pmatrix}
+			x_3 \\ \gamma(x_2)
+			\end{pmatrix}
+			\right\}\\
+			%
+			\overset{\text{Vert.}}{\Longrightarrow}
+			%
+			&\left\{ \begin{pmatrix}
+			\col{x_2} \\ \alpha
+			\end{pmatrix}, \begin{pmatrix}
+			x_3 \\ \gamma(\col{x_2})
+			\end{pmatrix}
+			\right\}\\	
+			%
+			\overset{\text{Subst.}}{\Longrightarrow}
+			%
+			&\left\{ \begin{pmatrix}
+			x_2 \\ \alpha
+			\end{pmatrix}, \begin{pmatrix}
+			x_3 \\ \gamma(\alpha)
+			\end{pmatrix}
+			\right\}\\	
+		\end{align*}
+		\end{minipage}
+		\pause
+		\begin{minipage}{\dimexpr0.5\linewidth-\fboxrule-\fboxsep}
+		\begin{center}
+		\emph{allgemeinster Unifikator:} \vspace{-\baselineskip}
+			\begin{align*}
+				x_1 \mapsto x_1 \qquad
+				x_2 \mapsto \alpha \qquad
+				x_3 \mapsto \gamma(\alpha)
+			\end{align*}
+%			
+			\medskip
+			\pause
+						
+			\emph{Teilaufgabe (b)} \vspace{-\baselineskip}
+			\begin{align*}
+				t_1 &= \texttt{(a , [a])} \\
+				t_2 &= \texttt{(Int , [Double])} \\
+				t_3 &= \texttt{(b , c)}
+			\end{align*}
+			\pause
+			\begin{itemize}
+				\item $t_1$ und $t_2$ sind \pause \emph{nicht} unifizierbar
+				
+				\item $t_1$ und $t_3$ sind \pause unifizierbar mit \pause
+				$\texttt{a} \mapsto \texttt{a} \qquad \texttt{b} \mapsto \texttt{a} \qquad \texttt{c} \mapsto \texttt{[a]}$
+				
+				\item $t_2$ und $t_3$ sind \pause unifizierbar mit \pause 		$\texttt{b} \mapsto \texttt{Int} \qquad \texttt{c} \mapsto \texttt{[Double]}$
+			\end{itemize}
+		\end{center}
+		\end{minipage}
+	\end{frame}
+
+	\begin{frame} \frametitle{Aufgabe 2}
+	\begin{minipage}{\dimexpr0.5\linewidth-\fboxrule-\fboxsep}
+		\begin{align*}
+		&\left\{\left(\begin{array}{rclllcl}
+		\col{\sigma} \, \col{\Big(} & \gamma(x_2) &\col{,} & \sigma ( & \gamma(\alpha) , & x_3                &) \col{\Big)} \\
+		\col{\sigma} \, \col{\Big(} & x_1         &\col{,} & \sigma ( & \gamma(\alpha) , & \sigma(\alpha,x_1) &) \col{\Big)}
+		\end{array}\right)\right\}\\
+		%
+		\overset{\text{Dek.}}{\Longrightarrow}
+		%
+		&\left\{\begin{pmatrix}
+		\gamma(x_2) \\ x_1
+		\end{pmatrix} , 
+		\left(\begin{array}{llcl}
+		\col{\sigma (} & \gamma(\alpha) \col{,} & x_3                &\col{)}  \\
+		\col{\sigma (} & \gamma(\alpha) \col{,} & \sigma(\alpha,x_1) &\col{)}
+		\end{array}\right)	\right\}\\
+		%
+		\overset{\text{Dek.}}{\Longrightarrow}
+		%
+		&\left\{\begin{pmatrix}
+		\gamma(x_2) \\ x_1
+		\end{pmatrix} , \begin{pmatrix}
+		\col{\gamma(\alpha)} \\ \col{\gamma(\alpha)}
+		\end{pmatrix} , \begin{pmatrix}
+		x_3 \\ \sigma(\alpha,x_1)
+		\end{pmatrix} \right\}\\
+		%
+		\overset{\text{Dek.}}{\Longrightarrow^2}
+		%
+		&\left\{ \begin{pmatrix}
+		\col{\gamma(x_2)} \\ \col{x_1}
+		\end{pmatrix} , \begin{pmatrix}
+		x_3 \\ \sigma(\alpha,x_1)
+		\end{pmatrix} \right\} \\
+		%
+		\overset{\text{Vert.}}{\Longrightarrow}
+		%
+		&\left\{ \begin{pmatrix}
+		\col{x_1} \\ \gamma(x_2)
+		\end{pmatrix} , \begin{pmatrix}
+		x_3 \\ \sigma(\alpha,\col{x_1})
+		\end{pmatrix} \right\} \quad {\tiny \textcolor{cdgray}{x_1 \text{ kommt nicht in } \gamma(x_2) \text{ vor}}}\\
+		%
+		\overset{\text{Sub.}}{\Longrightarrow}
+		%
+		&\left\{ \begin{pmatrix}
+		x_1 \\ \gamma(x_2)
+		\end{pmatrix} , \begin{pmatrix}
+		x_3 \\ \sigma(\alpha,\gamma(x_2))
+		\end{pmatrix} \right\}
+		\end{align*}
+	\end{minipage}
+	\pause
+	\begin{minipage}{\dimexpr0.5\linewidth-\fboxrule-\fboxsep}
+		\begin{center}
+			\emph{allgemeinster Unifikator:} \vspace{-\baselineskip}
+			\begin{align*}
+			x_1 \mapsto \gamma(x_2) \qquad
+			x_2 \mapsto x_2 \qquad
+			x_3 \mapsto \sigma(\alpha,\gamma(x_2))
+			\end{align*}
+			
+			\medskip
+			\pause
+			
+			\emph{weitere Unifikatoren:} \vspace{-\baselineskip}
+			\begin{align*}
+			x_1 &\mapsto \gamma(\alpha)
+			&x_2 &\mapsto \alpha
+			&x_3 &\mapsto \sigma(\alpha, \gamma(\alpha)) \\
+			%
+			x_1 &\mapsto \gamma(\gamma(\alpha))
+			&x_2 &\mapsto \gamma(\alpha)
+			&x_3 &\mapsto \sigma(\alpha , \gamma(\gamma(\alpha)))
+			\end{align*}
+		\end{center}
+	\end{minipage}
+\end{frame}
+
+\begin{frame} \frametitle{Strukturelle Induktion}
+\small
+\begin{itemize}
+	\item \emph{Allgemeine Hinweise.} Es müssen \coloremph{alle} Variablen quantifiziert werden!
+	\medskip
+	\item \emph{Was wollen wir?} Wir wollen \coloremph{zeigen}, dass eine Eigenschaft (ein Prädikat) $P$ für jede Liste \texttt{xs :: [a]} gilt, d.h. dass $P(\texttt{xs})$ gilt.
+	\pause
+	\bigskip
+	\item \emph{Induktionsanfang.} Wir zeigen $P(\texttt{xs})$ für $\texttt{xs == [\,]}$. \\
+	Achtung: hat P weitere freie Parameter, dann müssen auch diese quantifiziert werden!
+	\pause
+	\medskip	
+	\item \emph{Induktionsvoraussetzung.} Wir nehmen an, dass $P(\texttt{xs'})$ für eine Liste $\texttt{xs' :: [a]}$ gilt. \\
+	Achtung: freie Parameter!
+	\pause
+	\medskip
+	\item \emph{Induktionsschritt.} Nutze die Induktionsvoraussetzung um zu zeigen, dass $P(\texttt{x : xs'})$ für alle $\texttt{x :: a}$ gilt.
+\end{itemize}
+\end{frame}
+
+\begin{frame} \frametitle{Aufgabe 3}
+\small
+	\begin{itemize}
+		\item \emph{zu zeigen.} 
+		\begin{equation*}
+			\cw{sum (foo xs) = 2 * sum xs - length xs} \qquad \text{für alle } \cw{xs :: Int}
+		\end{equation*}
+		
+		\pause
+		\medskip
+		
+		\item \emph{Induktionsanfang.} \quad Sei \cw{xs :: [Int]} mit \cw{xs == []}. 
+		\begin{align*}
+			\text{linke Seite: } \quad &\cw{sum (foo []) \step{2} sum [] \step{6} 0} \\
+			\text{rechte Seite: } \quad &\cw{2 * sum [] - length [] \step{10} 2 * sum [] - 0 \step{6} 2 * 0 - 0 = 0}
+		\end{align*}
+		
+		\pause
+		\medskip
+		
+		\item \emph{Induktionsvoraussetzung.} \quad Sei \cw{xs :: [Int]}, sodass gilt
+		\begin{equation*}
+		\cw{sum (foo xs) = 2 * sum xs - length xs}
+		\end{equation*}
+	\end{itemize}
+\end{frame}
+
+\begin{frame} \frametitle{Aufgabe 3}
+	\begin{itemize}
+		\item \emph{Induktionsschritt.} \quad Für alle \cw{x :: Int} zeigen wir, dass gilt
+		\begin{equation*}
+		\cw{sum ( foo (x:xs) ) = 2 * sum (x:xs) - length (x:xs)}
+		\end{equation*}
+		\underline{Beweis.} \vspace{-0.75\baselineskip}
+		\begin{align*}
+			\cw{sum (foo (x:xs))} \astep{3} \cw{sum (x : x : (-1) : foo xs)} \\
+			\astep[3*]{7} \cw{x + x + (-1) + sum (foo xs)} \\
+			\astep{IV} \cw{x + x + (-1) + 2 * sum xs - length xs} \\
+			\astep{Komm.} \cw{2 * x + 2 * sum xs - 1 - length xs)} \\
+			\astep{Dist.} \cw{2 * (x + sum xs) - (1 + length xs)} \\
+			\astep{7} \cw{2 * sum (x:xs) - (1 + length xs)} \\
+			\astep{11} \cw{2 * sum (x:xs) - length (x:xs)} 
+		\end{align*}
+		\vspace{-3\baselineskip}\flushright\qed
+	\end{itemize}
+\end{frame}
+
+\end{document}

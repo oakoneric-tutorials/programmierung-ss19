@@ -1,0 +1,243 @@
+\documentclass[aspectratio=1610,onlymath, ngerman]{beamer}
+% \documentclass[aspectratio=1610,onlymath,handout]{beamer}
+\usepackage[ngerman]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+
+\usetheme[nosectionnum,pagenum,sansmath, cd2018, nodin]{tud}
+
+%\usefonttheme[onlymath]{serif}
+\usepackage{opensans}
+\usepackage{stmaryrd}
+\usepackage[normalem]{ulem} % sout command
+\usepackage{txfonts}
+\DeclareMathAlphabet{\mathsc}{OT1}{cmr}{m}{sc}
+
+\usepackage{listings}
+\lstset{language=Haskell,basicstyle=\ttfamily}
+\usepackage{verbatim}
+\usepackage{bold-extra}
+
+\setbeamerfont{title}{size=\Huge, family=\bfseries\fosfamily}
+\setbeamerfont{frametitle}{size=\LARGE, family=\bfseries\fosfamily}
+
+\setbeamerfont{normal text}{size=\normalsize}
+\setbeamerfont{itemize/enumerate body}{}
+\setbeamerfont{itemize/enumerate subbody}{size=\small}
+\setbeamerfont{itemize/enumerate subsubbody}{size=\footnotesize}
+
+\usepackage{tudscrcolor}
+\usepackage{environ}
+\usepackage{tikz}
+\usetikzlibrary{arrows,positioning,decorations.pathreplacing}
+% Inspired by http://www.texample.net/tikz/examples/hand-drawn-lines/
+\usetikzlibrary{decorations.pathmorphing}
+\pgfdeclaredecoration{penciline}{initial}{
+    \state{initial}[width=+\pgfdecoratedinputsegmentremainingdistance,
+    auto corner on length=1mm,]{
+        \pgfpathcurveto%
+        {% From
+            \pgfqpoint{\pgfdecoratedinputsegmentremainingdistance}
+            {\pgfdecorationsegmentamplitude}
+        }
+        {%  Control 1
+            \pgfmathrand
+            \pgfpointadd{\pgfqpoint{\pgfdecoratedinputsegmentremainingdistance}{0pt}}
+            {\pgfqpoint{-\pgfdecorationsegmentaspect
+                    \pgfdecoratedinputsegmentremainingdistance}%
+                {\pgfmathresult\pgfdecorationsegmentamplitude}
+            }
+        }
+        {%TO
+            \pgfpointadd{\pgfpointdecoratedinputsegmentlast}{\pgfpoint{1pt}{1pt}}
+        }
+    }
+    \state{final}{}
+}
+\tikzset{handdrawn/.style={decorate,decoration=penciline}}
+\tikzset{every shadow/.style={fill=none,shadow xshift=0pt,shadow yshift=0pt}}
+
+\NewEnviron{doodlebox}[2]{%
+    \begin{tikzpicture}[decoration=penciline, decorate]%
+    \pgfmathsetseed{1237}%
+    \node (n1) [decorate,draw=#1, fill=#2,thick,align=justify, text width=0.97\textwidth, inner ysep=2mm, inner xsep=2mm] at (0,0) {\BODY};%
+    \end{tikzpicture}%
+}
+\NewEnviron{doodle}[1]{%
+    \begin{tikzpicture}[decoration=penciline, decorate]%
+    \pgfmathsetseed{1237}%
+    \node (n1) [decorate,draw=#1, fill=#1!10,thick,align=justify, text width=0.97\textwidth, inner ysep=2mm, inner xsep=2mm] at (0,0) {\BODY};%
+    \end{tikzpicture}%
+}
+
+\newcommand{\defineTitle}[3]{%
+    \newcommand{\lectureindex}{#1}%
+    \title{Programmierung}%
+    \subtitle{Übung #1: #2}%
+    \author{Eric Kunze \\ \url{eric.kunze@mailbox.tu-dresden.de} }%
+    \date{#3}%
+    \datecity{TU Dresden}%
+}
+
+\defineTitle{2}{Haskell -- Funktionen höherer Ordnung und Zeichenketten}{\today}
+\renewcommand{\emph}[1]{\textbf{#1}}
+\newcommand{\coloremph}[1]{\textcolor{cdpurple}{#1}}
+\DeclareMathSymbol{*}{\mathbin}{symbols}{"01}
+    
+\begin{document}
+    \maketitle
+    
+    \begin{frame}\frametitle{Rekapitulation: Funktionsprinzip}
+    \normalsize
+    	Wir erinnern uns an das \emph{Funktionsprinzip}: \\ \medskip
+    	
+    	Definition durch \\
+    	\smallskip
+    	\begin{itemize}
+    		\item \emph{Basisfall.} $\quad$ $0$-äre Wertkonstruktoren \\
+    		z.B. \texttt{[ \enskip ]} oder \texttt{Leaf} 
+    		\medskip
+    		\item \emph{Rekursionsfall.} $\quad$ $(>0)$-äre Wertkonstruktoren \\
+    		z.B. \texttt{:} oder \texttt{Node}
+    	\end{itemize}
+    \end{frame}
+
+    \begin{frame}\frametitle{Wichtige Hinweise}
+    \normalsize
+   		\emph{korrekte Klammerung}:
+   		\begin{center}
+   			\texttt{ f (Leaf a) (Leaf b)} $\quad$ statt $\quad$ \texttt{f Leaf a Leaf b}
+   		\end{center}
+   		
+   		\bigskip
+   		
+	    \emph{Jeder Ausdruck hat einen Typ}: \\ \smallskip
+   		Statt 
+   		\begin{center}
+   			\texttt{if a == b then boolExp else False}
+   		\end{center}
+   		sollte immer 
+   		\begin{center}
+   			\texttt{a == b \&\& boolExp}
+   		\end{center}
+		verwendet werden.
+		\bigskip
+		
+%		\emph{Typ- und Wertkonstruktoren} sind unterschiedliche Dinge
+    \end{frame}
+
+	\begin{frame} \frametitle{Funktionen}
+	\small
+		Wir kennen bereits einige Möglichkeiten Funktionen zu notieren. Hier seien einige weitere erwähnt. \\
+		\bigskip
+		\emph{anonyme Funktionen.} \\
+		Funktionen ohne konkreten Namen \\
+		z.B. \texttt{(\textbackslash \!\!\! x -> x + 1)} ist die Addition mit \texttt{1} \\
+		\medskip \pause
+		\emph{Funktionskomposition.}
+		Analog zur mathematischen Notation $f = g \circ h$ für $f(x) = g(h(x))$ versteht auch Haskell das Kompositionsprinzip mit dem Operator \texttt{.} \\ \smallskip
+		z.B. 
+		\begin{center}
+			\texttt{prodOdd = prod . filter odd}
+		\end{center} 
+		statt \texttt{prodOdd xs = prod (filter odd xs)} für das Produkt aller ungeraden Listenelemente
+		
+	\end{frame}
+    \begin{frame}\frametitle{Funktionen höherer Ordnung -- \texttt{map}}
+    \normalsize 
+    	{\Large Die Funktion \emph{\texttt{map}}.} \\ \medskip
+    	\begin{itemize}
+    		\item 
+    		\begin{ttfamily}
+    			map :: (a -> b) -> [a] -> [b] \\
+	    		map f [] = [] \\
+	    		map f (x:xs) = f x : map f xs
+    		\end{ttfamily}
+    		\pause \smallskip
+    		\item \texttt{map} $\quad$ ermöglicht es eine Funktion \texttt{f} auf alle Elemente einer Liste anzuwenden
+    		\pause \smallskip
+    		\item \emph{Beispiel.} \\
+    		 \texttt{map square [1,2,7,12,3,20] = [1,4,49,144,9,400]}
+    	\end{itemize}
+    \end{frame}
+
+	\begin{frame}\frametitle{Funktionen höherer Ordnung -- \texttt{filter}}
+	\normalsize 
+	{\Large Die Funktion \emph{\texttt{filter}}.} \\ \medskip
+	\begin{itemize}
+		\item 
+		\begin{ttfamily}
+			filter :: (a -> Bool) -> [a] -> [a] \\
+			filter p xs = [ x | x <- xs, p x]
+		\end{ttfamily}
+		\pause \smallskip
+		\item \texttt{filter p xs} $\quad$ liefert eine Liste, die genau die Elemente von \texttt{xs} enthält, welche das Prädikat \texttt{p} erfüllen
+		\pause \smallskip
+		\item \emph{Beispiel.} \\
+		\texttt{filter odd [1,2,7,12,3,20] = [1,7,3]}
+	\end{itemize}
+	\end{frame}
+
+	\begin{frame}\frametitle{Funktionen höherer Ordnung -- \texttt{foldr}}
+		\normalsize 
+		{\Large Die Funktion \emph{\texttt{foldr}}.} \\ \medskip
+		\begin{itemize}
+			\item 
+			\begin{ttfamily}
+				foldr :: (a -> b -> b) -> b -> [a] -> b \\
+				foldr f z []     = z \\
+				foldr f z (x:xs) = f x (foldr f z xs) 
+			\end{ttfamily}
+			\pause \smallskip
+			\item \texttt{foldr f z xs} $\quad$ faltet eine Liste \texttt{xs} und verknüpft jeweils durch die Funktion \texttt{f}; gestartet wird mit \texttt{z} und dem rechtesten Element
+			\pause \smallskip
+			\item \emph{Beispiel.} \\
+			\texttt{foldr (+) 3 [1,2,3,4,5] = 18} \\
+			\texttt{length xs = foldr (+) 0 (map (\textbackslash \!\!\! x -> 1) xs) }
+			\pause \smallskip
+			\item Analog existiert auch eine Funktion \texttt{foldl}, die eine Liste von links beginnend faltet.
+		\end{itemize}
+	\end{frame}
+
+
+	\begin{frame}\frametitle{Funktionen höherer Ordnung -- Übersicht}
+		\normalsize 
+		\begin{itemize}
+			\item \texttt{\textbf{map}} wendet Funktion auf alle Listenelemente an \\
+				\begin{ttfamily}
+					map :: (a -> b) -> [a] -> [b] \\
+					map f [] = [] \\
+					map f (x:xs) = f x : map f xs
+				\end{ttfamily}
+			\medskip
+			\item \texttt{\textbf{filter}} wählt Listenelemente anhand einer Funktion aus \\
+				\begin{ttfamily}
+					filter :: (a -> Bool) -> [a] -> [a] \\
+					filter p xs = [ x | x <- xs, p x]
+				\end{ttfamily}
+			\medskip
+			\item \texttt{\textbf{foldr}} faltet eine Liste mit Verknüpfungsfunktion (von rechts beginnend) \\
+				\begin{ttfamily}
+					foldr :: (a -> b -> b) -> b -> [a] -> b \\
+					foldr f z []     = z \\
+					foldr f z (x:xs) = f x (foldr f z xs) 
+				\end{ttfamily}
+		\end{itemize}
+	\end{frame}
+
+	\begin{frame} \frametitle{Zeichenketten}
+	\normalsize
+		\emph{Characters} werden in \texttt{' '} eingeschlossen. \\
+		\emph{Strings} werden in \texttt{`` ''} eingeschlossen. $\quad \rightarrow$ normale double-quotes \\
+		\bigskip \pause
+		Dabei gilt \texttt{String = [Char]}. \\
+		\bigskip \pause
+		Überprüfe den Typ in GHCi anhand eigener Beispiele mittels \texttt{:t}.\\
+		z.B. \\
+		\lstinline{:t ['a','b']} $\Longrightarrow$ \lstinline{['a','b'] :: [Char]} \\
+		\lstinline{:t 'a'}      $\Longrightarrow$ \lstinline{'a' :: Char} \\
+		\lstinline{:t ``ab''}     $\Longrightarrow$ \lstinline{``ab'' :: [Char]} 
+	\end{frame}
+
+
+\end{document}

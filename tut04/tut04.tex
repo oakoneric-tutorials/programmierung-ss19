@@ -1,0 +1,277 @@
+\documentclass[aspectratio=1610,onlymath, ngerman]{beamer}
+% \documentclass[aspectratio=1610,onlymath,handout]{beamer}
+\usepackage[ngerman]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+
+\usetheme[nosectionnum,pagenum,sansmath, cd2018, nodin]{tud}
+
+%\usefonttheme[onlymath]{serif}
+\usepackage{opensans}
+\usepackage{stmaryrd}
+\usepackage[normalem]{ulem} % sout command
+\usepackage{txfonts}
+\DeclareMathAlphabet{\mathsc}{OT1}{cmr}{m}{sc}
+
+\usepackage{listings}
+\lstset{language=Haskell,basicstyle=\ttfamily}
+\usepackage{verbatim}
+\usepackage{bold-extra}
+
+\setbeamerfont{title}{size=\Huge, family=\bfseries\fosfamily}
+\setbeamerfont{frametitle}{size=\LARGE, family=\bfseries\fosfamily}
+
+\setbeamerfont{normal text}{size=\normalsize}
+\setbeamerfont{itemize/enumerate body}{}
+\setbeamerfont{itemize/enumerate subbody}{size=\small}
+\setbeamerfont{itemize/enumerate subsubbody}{size=\footnotesize}
+
+\usepackage{tudscrcolor}
+\usepackage{environ}
+\usepackage{tikz}
+\usetikzlibrary{arrows,positioning,decorations.pathreplacing}
+% Inspired by http://www.texample.net/tikz/examples/hand-drawn-lines/
+\usetikzlibrary{decorations.pathmorphing}
+\pgfdeclaredecoration{penciline}{initial}{
+    \state{initial}[width=+\pgfdecoratedinputsegmentremainingdistance,
+    auto corner on length=1mm,]{
+        \pgfpathcurveto%
+        {% From
+            \pgfqpoint{\pgfdecoratedinputsegmentremainingdistance}
+            {\pgfdecorationsegmentamplitude}
+        }
+        {%  Control 1
+            \pgfmathrand
+            \pgfpointadd{\pgfqpoint{\pgfdecoratedinputsegmentremainingdistance}{0pt}}
+            {\pgfqpoint{-\pgfdecorationsegmentaspect
+                    \pgfdecoratedinputsegmentremainingdistance}%
+                {\pgfmathresult\pgfdecorationsegmentamplitude}
+            }
+        }
+        {%TO
+            \pgfpointadd{\pgfpointdecoratedinputsegmentlast}{\pgfpoint{1pt}{1pt}}
+        }
+    }
+    \state{final}{}
+}
+\tikzset{handdrawn/.style={decorate,decoration=penciline}}
+\tikzset{every shadow/.style={fill=none,shadow xshift=0pt,shadow yshift=0pt}}
+
+\NewEnviron{doodlebox}[2]{%
+    \begin{tikzpicture}[decoration=penciline, decorate]%
+    \pgfmathsetseed{1237}%
+    \node (n1) [decorate,draw=#1, fill=#2,thick,align=justify, text width=0.97\textwidth, inner ysep=2mm, inner xsep=2mm] at (0,0) {\BODY};%
+    \end{tikzpicture}%
+}
+\NewEnviron{doodle}[1]{%
+    \begin{tikzpicture}[decoration=penciline, decorate]%
+    \pgfmathsetseed{1237}%
+    \node (n1) [decorate,draw=#1, fill=#1!10,thick,align=justify, text width=0.97\textwidth, inner ysep=2mm, inner xsep=2mm] at (0,0) {\BODY};%
+    \end{tikzpicture}%
+}
+
+\newcommand{\defineTitle}[3]{%
+    \newcommand{\lectureindex}{#1}%
+    \title{Programmierung}%
+    \subtitle{Übung #1: #2}%
+    \author{Eric Kunze \\ \url{eric.kunze@mailbox.tu-dresden.de} }%
+    \date{#3}%
+    \datecity{TU Dresden}%
+}
+
+\defineTitle{4}{Haskell -- Typpolymorphie \& Unifikation}{\today}
+\renewcommand{\emph}[1]{\textbf{#1}}
+\newcommand{\coloremph}[1]{\textcolor{cdpurple}{#1}}
+\newcommand{\col}[1]{\textcolor{cdpurple}{\boldsymbol{#1}}}
+\DeclareMathSymbol{*}{\mathbin}{symbols}{"01}
+    
+\begin{document}
+    \maketitle
+    
+    \begin{frame}\frametitle{Unifikation}
+	%\begin{minipage}{\dimexpr0.5\linewidth-\fboxrule-\fboxsep}
+%		\small
+%		\begin{doodle}{cdorange}
+%			\emph{Verlegung an Himmelfahrt:} \\
+%			von Do, 30.05., 1. DS auf 
+%			\emph{Mittwoch, 29.05., 1.DS, APB E001}
+%		\end{doodle}
+%	
+%	\bigskip
+	
+	%\end{minipage}
+%	\pause
+	\small
+	\begin{minipage}{\dimexpr0.5\linewidth-\fboxrule-\fboxsep}
+		\emph{Motivation:}
+		\textit{Typüberprüfung} \\
+		
+		\smallskip 
+		\begin{ttfamily}
+			f :: (t, Char) -> (t, [Char]) \\
+			f (...) = ... \\
+			
+			\smallskip
+			
+			g :: (Int, [u]) -> Int \\
+			g (...) = ... \\
+			
+			\smallskip
+			
+			h = g . f
+		\end{ttfamily}
+	\end{minipage}
+	\pause
+	\begin{minipage}{\dimexpr0.5\linewidth-\fboxrule-\fboxsep}
+		Beide Typausdrücke können in Übereinstimmung gebracht werden, wenn die Typterme $trans(\texttt{(t,[Char])})$ und $trans(\texttt{(Int, [u])})$ unifizierbar sind\\
+		
+		\smallskip
+		\pause
+		$\to$ \texttt{t = Int} und \texttt{u = Char}
+	\end{minipage}
+    \normalsize
+    \end{frame}
+
+	\begin{frame}\frametitle{Unifikationsalgorithmus}
+	\normalsize
+		\begin{itemize}
+			\item \emph{Ziel.} Am Ende sollen nur paarweise verschiedene Variablen in der oberen Zeile stehen \underline{und} keine Regel mehr anwendbar sein.
+			
+			\bigskip
+			
+			\item \emph{beliebter Fehler.} Verwechslung von Elimination von Variablen $(x_i , x_i)$ und Dekomposition von nullären Symbolen $(\alpha , \alpha)$.
+		\end{itemize}
+	\end{frame}
+
+	\begin{frame}\frametitle{Unifikationsalgorithmus -- Regeln}
+	\small
+		\begin{itemize}
+			\item \emph{Dekomposition.} Sei $\delta \in \Sigma$ ein $k$-stelliger Konstruktor, $s_1 , \dots , s_k , t_1 , \dots , t_k$ Terme über Konstruktoren und Variablen.
+			\begin{equation*}
+				\begin{pmatrix}
+				\delta(s_1, \dots , s_k) \\ \delta(t_1, \dots , t_k)
+				\end{pmatrix}
+				\quad \leadsto \quad
+				\begin{pmatrix} s_1 \\ t_1 \end{pmatrix} , \dots , \begin{pmatrix} s_k \\ t_k \end{pmatrix}
+			\end{equation*}
+			\item \emph{Elimination.} Sei $x$ eine Variable \coloremph{!}
+			\begin{equation*}
+				\begin{pmatrix} x \\ x \end{pmatrix}
+				\quad \leadsto \quad
+				\emptyset
+			\end{equation*}
+			\item \emph{Vertauschung.} Sei $t$ keine Variable.
+			\begin{equation*}
+				\begin{pmatrix} t \\ x \end{pmatrix}
+				\quad \leadsto \quad 
+				\begin{pmatrix} x \\ t \end{pmatrix}
+			\end{equation*}
+			\item \emph{Substitution.} Sei $x$ eine Variable, $t$ keine Variable und $x$ kommt nicht in $t$ vor (occur check). Dann ersetze in jedem anderen Term die Variable $x$ durch $t$.
+		\end{itemize}
+	\end{frame}
+	\arraycolsep2pt
+	\begin{frame}\frametitle{Aufgabe 3}
+		\begin{minipage}{\dimexpr0.5\linewidth-\fboxrule-\fboxsep}
+		\begin{align*}
+			&\left\{\left(\begin{array}{lcrlcl}
+				\col{\sigma(}\sigma(&x_1,&\alpha) \col{,} &\sigma(&\gamma(x_3) , &x_3)\col{)} \\
+				\col{\sigma(}\sigma( &\gamma(x_2),&\alpha) \col{,} &\sigma(&x_2 , &x_3)\col{)}
+				\end{array}\right)\right\}\\
+			\overset{\text{Dek.}}{\Longrightarrow}
+			%
+			&\left\{\left(\begin{array}{lcr}
+			\col{\sigma(}&x_1\col{,}&\alpha\col{)} \\
+			\col{\sigma(}&\gamma(x_2)\col{,}&\alpha\col{)}
+			\end{array}\right),
+			\left(\begin{array}{lcr}
+			 \col{\sigma(}&\gamma(x_3) \col{,} &x_3)\col{)} \\
+			 \col{\sigma(}&x_2 \col{,} &x_3)\col{)}
+			\end{array}\right)\right\} \\
+			\overset{\text{Dek.}}{\Longrightarrow^2}
+			%
+			&\left\{ \begin{pmatrix}
+				x_1 \\ \gamma(x_2)
+			\end{pmatrix} , \begin{pmatrix}
+				\alpha \\ \alpha
+			\end{pmatrix} , \begin{pmatrix}
+				\gamma(x_3) \\ x_2
+			\end{pmatrix} , \col{\begin{pmatrix}
+				x_3 \\ x_3 
+			\end{pmatrix}} \right\} \\
+			\overset{\text{El.}}{\Longrightarrow}
+			%
+			&\left\{
+			\begin{pmatrix}
+				x_1 \\ \gamma(x_2)
+			\end{pmatrix} , \col{\begin{pmatrix}
+				\alpha \\ \alpha
+			\end{pmatrix}} , \begin{pmatrix}
+				\gamma(x_3) \\ x_2
+			\end{pmatrix}
+			\right\} \\
+			\overset{\text{Dek.}}{\Longrightarrow}
+			%
+			&\left\{
+			\begin{pmatrix}
+			x_1 \\ \gamma(x_2)
+			\end{pmatrix} , \col{\begin{pmatrix}
+			\gamma(x_3) \\ x_2
+			\end{pmatrix}}
+			\right\} \\
+			\overset{\text{Vert.}}{\Longrightarrow}
+			%
+			&\left\{
+			\begin{pmatrix}
+			x_1 \\ \gamma(\col{x_2})
+			\end{pmatrix} , \begin{pmatrix}
+			\col{x_2} \\ \gamma(x_3)
+			\end{pmatrix}
+			\right\} \quad {\tiny \textcolor{cdgray}{x_2 \text{ kommt nicht in } \gamma(x_3) \text{ vor}}}\\
+			%
+			\overset{\text{Subst.}}{\Longrightarrow}
+			&\left\{
+			\begin{pmatrix}
+			x_1 \\ \gamma(\gamma(x_3))
+			\end{pmatrix} , \begin{pmatrix}
+			x_2 \\ \gamma(x_3)
+			\end{pmatrix}
+			\right\}
+		\end{align*}
+		\end{minipage}
+		\pause
+		\begin{minipage}{\dimexpr0.5\linewidth-\fboxrule-\fboxsep}
+		\begin{center}
+		\emph{allgemeinster Unifikator:} \vspace{-\baselineskip}
+			\begin{align*}
+				\qquad x_1 \mapsto \gamma(\gamma(x_3)) \qquad
+				x_2 \mapsto \gamma(x_3) \qquad
+				x_3 \mapsto x_3
+			\end{align*}
+			
+			\medskip
+			\pause
+						
+			\emph{weitere Unifikatoren:} \vspace{-\baselineskip}
+			\begin{align*}
+				x_1 &\mapsto \gamma(\gamma(\alpha))
+				&x_2 &\mapsto \gamma(\alpha)
+				&x_3 &\mapsto \alpha \\
+				x_1 &\mapsto \gamma(\gamma(\gamma(\alpha)))
+				&x_2 &\mapsto \gamma(\gamma(\alpha))
+				&x_3 &\mapsto \gamma(\alpha)
+			\end{align*}
+			
+			\medskip
+			\pause
+			
+			\emph{Fehlschlag beim occur-check:}  \\ 
+			\textcolor{cdgray}{Alphabet: $\Sigma = \left\{\gamma^{(1)} \right\}$} \vspace{-\baselineskip}
+			\begin{align*}
+				t_1 &= x_1 \\
+				t_2 &= \gamma(x_1)
+			\end{align*}
+		\end{center}
+		\end{minipage}
+	\end{frame}
+
+\end{document}
